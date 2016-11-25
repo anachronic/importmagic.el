@@ -1,0 +1,18 @@
+* importmagic.el
+
+This is an elisp package intended to use [[https://github.com/alecthomas/importmagic][importmagic]] to autoimport
+missing symbols in Python without having to bother to go to the
+beginning of the file to manually add the imports. I've tried it with
+Elpy and it works ok.
+
+This file is intended to *help the developing process*.
+
+** [0/5] Work process
+
+   - [ ] Write a python module that returns candidates
+   - [ ] Write an elisp extension that uses Python to get candidates
+   - [ ] Write more elisp to choose from the list. Maybe ivy, maybe
+     Helm
+   - [ ] Write elisp to actually insert the selected candidate
+   - [ ] Test it and bind it to a key.
+   - [ ] Maybe submit it to MELPA.
