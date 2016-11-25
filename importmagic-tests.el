@@ -42,4 +42,39 @@ future = datetime.timedelta(hours=1)
       (dolist (symbol expected-symbols)
         (should (member symbol actual-symbols))))))
 
+;; Test that importmagic-fix-imports ends up with a good buffer
+(ert-deftest importmagic-fix-imports-good ()
+  (with-temp-buffer
+    (insert importmagic-bad-buffer)
+    (let ((unread-command-events (listify-key-sequence (kbd "RET RET RET RET"))))
+      (importmagic-fix-imports))
+    (should (string= importmagic-good-buffer
+                     (importmagic--buffer-as-string)))))
+
+;; A dummy buffer with os.path should be able to import os
+(defconst importmagic-dummy-good-buffer
+  "import os
+
+
+os.path")
+
+;; Test a dummy buffer
+(ert-deftest importmagic-query-symbol-good ()
+  (with-temp-buffer
+    (insert "os.path")
+    (let ((unread-command-events (listify-key-sequence (kbd "RET"))))
+      (importmagic-fix-symbol "os"))
+    (should (string= importmagic-dummy-good-buffer
+                     (importmagic--buffer-as-string)))))
+
+;; Test that fix symbol at point is ok
+(ert-deftest importmagic-fix-at-point-good ()
+  (with-temp-buffer
+    (insert "os.path")
+    (backward-char 6)
+    (let ((unread-command-events (listify-key-sequence (kbd "RET"))))
+      (importmagic-fix-symbol-at-point))
+    (should (string= importmagic-dummy-good-buffer
+                     (importmagic--buffer-as-string)))))
+
 ;;; importmagic-tests.el ends here
