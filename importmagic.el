@@ -20,6 +20,10 @@
                (print (car res))
                (setq res (cdr res)))))))
 
+(deferred:$
+  (epc:call-deferred epc3 'get_import_statement `(,(expand-file-name "bad_buffer.py") "render"))
+  (deferred:nextc it
+    (lambda (x) (message "returned %s" x))))
 
 (epc:stop-epc epc3)
 

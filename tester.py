@@ -77,6 +77,35 @@ def get_candidates_for_symbol(*symbol):
     return candidates
 
 
+# Takes a list where the firest element is the source file as a string
+# (assuming the call is from elisp) and the second element is the
+# chosen import statement.
+@server.register_function
+def get_import_statement(*source_and_import):
+    filepath = _stringify(source_and_import[0])
+    import_statement = _stringify(source_and_import[1])
+
+    with open(filepath, 'r') as f:
+        source = f.read()
+
+    imports = importmagic.importer.Imports(index, source)
+
+    if import_statement.startswith('import '):
+        module = import_statement[7:]
+        imports.add_import(module)
+    else:
+        separator = import_statement.find(' import ')
+        module = import_statement[5:separator]
+
+        if separator >= 0:
+            imports.add_import_from(import_statement[5:separator],
+                                    import_statement[(separator + 8):])
+
+    start, end, new_statement = imports.get_update()
+
+    return [start, end, new_statement]
+
+
 @server.register_function
 def echo(*arg):
     # Should return arg + every letter in the alphabet
