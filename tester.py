@@ -1,8 +1,8 @@
 import sys
 import threading
 import importmagic
+from collections import deque
 from epc.server import EPCServer
-from string import ascii_lowercase
 
 server = EPCServer(('localhost', 0))
 
@@ -65,7 +65,7 @@ def get_unresolved_symbols(*filepath):
 def get_candidates_for_symbol(*symbol):
     symbol = _stringify(symbol)
 
-    candidates = []
+    candidates = deque([])
     for score, module, variable in index.symbol_scores(symbol):
         if variable is None:
             fmt = 'import {}'.format(str(module))
@@ -74,7 +74,7 @@ def get_candidates_for_symbol(*symbol):
 
         candidates.append(fmt)
 
-    return candidates
+    return list(candidates)
 
 
 # Takes a list where the firest element is the source file as a string

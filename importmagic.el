@@ -4,28 +4,61 @@
 
 (require 'epc)
 
-(defvar epc3 (epc:start-epc "python" '("tester.py")))
-(setq epc3 (epc:start-epc "python" '("tester.py")))
+(defvar importmagic-server (epc:start-epc "python" '("tester.py"))
+  "A variable that holds the importmagic.el EPC server.")
 
-(deferred:$
-  (epc:call-deferred epc3 'get_unresolved_symbols (expand-file-name "bad_buffer.py"))
-  (deferred:nextc it
-    (lambda (x) (message "Return : %S" x))))
 
-(deferred:$
-  (epc:call-deferred epc3 'get_candidates_for_symbol "os.path.join")
-  (deferred:nextc it
-    (lambda (x) (let ((res x))
-             (while res
-               (print (car res))
-               (setq res (cdr res)))))))
+(epc:stop-epc importmagic-server)
+(setq importmagic-server (epc:start-epc "python" '("tester.py")))
+(epc:call-sync importmagic-server
+               'get_candidates_for_symbol
+               `(,buffer-file-name ))
 
-(deferred:$
-  (epc:call-deferred epc3 'get_import_statement `(,(expand-file-name "bad_buffer.py") "render"))
-  (deferred:nextc it
-    (lambda (x) (message "returned %s" x))))
+(defun importmagic--fix-imports (import-block start end)
+  "Insert given IMPORT-BLOCK with import fixups in the current
+buffer starting in line START and ending in line END."
+  (save-restriction
+    (save-excursion
+      (widen)
+      (goto-char (point-min))
+      (forward-line start)
+      (let ((start-pos (point))
+            (end-pos (progn (forward-line (- end start)) (point))))
+        (delete-region start-pos end-pos)
+        (insert import-block)))))
 
-(epc:stop-epc epc3)
+(defun importmagic--query-imports-for-statement (statement)
+  "Query importmagic server for STATEMENT imports in the current buffer."
+  (let* ((specs (epc:call-sync importmagic-server
+                               'get_import_statement
+                               `(,buffer-file-name ,statement)))
+         (start (car specs))
+         (end (cadr specs))
+         (theblock (caddr specs)))
+    (importmagic--fix-imports theblock start end)))
+
+(defun importmagic-fix-symbol-at-point ()
+  "Query the RPC server for a suitable candidate to add to
+imports in order to correctly import the symbol at point. The
+default candidate is the most suitable. The selected candidate is
+then added to the import list at the top of the file."
+  (interactive)
+  (let* ((thesymbol (thing-at-point 'symbol t))
+         (options (epc:call-sync importmagic-server
+                                 'get_candidates_for_symbol
+                                 thesymbol)))
+    (if (not options)
+        (error "No suitable candidates found for %s" thesymbol)
+      (let ((choice (completing-read (concat "Querying for " thesymbol ": ")
+                                     options
+                                     nil
+                                     t
+                                     nil
+                                     nil
+                                     options)))
+        (message (importmagic--query-imports-for-statement choice))))))
+
+
 
 
 (provide 'importmagic)
