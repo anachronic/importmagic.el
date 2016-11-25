@@ -18,6 +18,10 @@ def _stringify(input_param):
 
 
 def _build_index(sys_path=sys.path, user_path=None):
+    # since index is a global variable, need the global keyword. I did
+    # not know this
+    # http://stackoverflow.com/questions/423379/using-global-variables-in-a-function-other-than-the-one-that-created-them
+    global index
     try:
         paths = []
 
@@ -55,6 +59,23 @@ def get_unresolved_symbols(*filepath):
         unres, unref = scope.find_unresolved_and_unreferenced_symbols()
 
     return list(unres)
+
+
+@server.register_function
+def get_candidates_for_symbol(*symbol):
+    symbol = _stringify(symbol)
+
+    candidates = []
+    for score, module, variable in index.symbol_scores(symbol):
+        if variable is None:
+            fmt = 'import {}'.format(str(module))
+        else:
+            fmt = 'from {} import {}'.format(str(module), str(variable))
+
+        candidates.append(fmt)
+
+    return candidates
+
 
 @server.register_function
 def echo(*arg):

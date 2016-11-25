@@ -12,6 +12,15 @@
   (deferred:nextc it
     (lambda (x) (message "Return : %S" x))))
 
+(deferred:$
+  (epc:call-deferred epc3 'get_candidates_for_symbol "os.path.join")
+  (deferred:nextc it
+    (lambda (x) (let ((res x))
+             (while res
+               (print (car res))
+               (setq res (cdr res)))))))
+
+
 (epc:stop-epc epc3)
 
 

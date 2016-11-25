@@ -7,12 +7,15 @@ Elpy and it works ok.
 
 This file is intended to *help the developing process*.
 
-** [0/4] Work process
+** [0/7] Work process
 
    1. [-] Write the Python EPC Server:
       * [X] Write a function that returns unimported symbols
-      * [ ] Write a function that returns candidates for a single
+      * [X] Write a function that returns candidates for a single
         symbol
+      * [ ] Write a function that returns where to put the new
+        import. Actually we may or may not need this function, it
+        really depends on how Python imports should be put in a buffer
    2. [ ] Write the actual =importmagic.el= file using EPC.
       * [ ] Write a function that starts the RPC server on buffer
         initialization.
