@@ -7,12 +7,24 @@ Elpy and it works ok.
 
 This file is intended to *help the developing process*.
 
-** [0/5] Work process
+** [0/4] Work process
 
-   - [ ] Write a python module that returns candidates
-   - [ ] Write an elisp extension that uses Python to get candidates
-   - [ ] Write more elisp to choose from the list. Maybe ivy, maybe
-     Helm
-   - [ ] Write elisp to actually insert the selected candidate
-   - [ ] Test it and bind it to a key.
-   - [ ] Maybe submit it to MELPA.
+   1. [-] Write the Python EPC Server:
+      * [X] Write a function that returns unimported symbols
+      * [ ] Write a function that returns candidates for a single
+        symbol
+   2. [ ] Write the actual =importmagic.el= file using EPC.
+      * [ ] Write a function that starts the RPC server on buffer
+        initialization.
+      * [ ] Write a function that queries the server for the unresolved
+        symbols to import and shows the candidates using
+        =completing-read= or something along those lines. Do that for
+        every candidate on each unimported symbol.
+      * [ ] Write a function that actually inserts the suggested import
+        in the buffer /without/ saving it
+   3. [ ] Write a *good* README file.
+   4. [ ] Test it and bind it to a key.
+   5. [ ] Use it for profit.
+   6. [ ] Use [[https://github.com/cask/cask][Cask]]. Make tests for the package and actually create a
+      package
+   7. [ ] Maybe submit it to MELPA.
