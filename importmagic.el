@@ -37,19 +37,16 @@ buffer starting in line START and ending in line END."
          (theblock (caddr specs)))
     (importmagic--fix-imports theblock start end)))
 
-(defun importmagic-fix-symbol-at-point ()
-  "Query the RPC server for a suitable candidate to add to
-imports in order to correctly import the symbol at point. The
-default candidate is the most suitable. The selected candidate is
-then added to the import list at the top of the file."
-  (interactive)
-  (let* ((thesymbol (thing-at-point 'symbol t))
-         (options (epc:call-sync importmagic-server
-                                 'get_candidates_for_symbol
-                                 thesymbol)))
+
+(defun importmagic-fix-symbol (symbol)
+  "Fix imports for SYMBOL in current buffer."
+  (interactive "sSymbol: ")
+  (let ((options (epc:call-sync importmagic-server
+                                'get_candidates_for_symbol
+                                symbol)))
     (if (not options)
-        (error "No suitable candidates found for %s" thesymbol)
-      (let ((choice (completing-read (concat "Querying for " thesymbol ": ")
+        (error "No suitable candidates found for %s" symbol)
+      (let ((choice (completing-read (concat "Querying for " symbol ": ")
                                      options
                                      nil
                                      t
@@ -58,6 +55,20 @@ then added to the import list at the top of the file."
                                      options)))
         (importmagic--query-imports-for-statement-and-fix choice)
         (message "Inserted %s" choice)))))
+
+(defun importmagic-fix-symbol-at-point ()
+  "Query the RPC server for a suitable candidate to add to
+imports in order to correctly import the symbol at point. The
+default candidate is the most suitable. The selected candidate is
+then added to the import list at the top of the file."
+  (interactive)
+  (importmagic-fix-symbol (thing-at-point 'symbol t)))
+
+(defun importmagic--get-unresolved-symbols ()
+  "Query the RPC server for every unresolved symbol in the current file."
+  (epc:call-sync importmagic-server 'get_unresolved_symbols buffer-file-name))
+
+
 
 
 
