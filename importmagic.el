@@ -27,7 +27,7 @@ buffer starting in line START and ending in line END."
         (delete-region start-pos end-pos)
         (insert import-block)))))
 
-(defun importmagic--query-imports-for-statement (statement)
+(defun importmagic--query-imports-for-statement-and-fix (statement)
   "Query importmagic server for STATEMENT imports in the current buffer."
   (let* ((specs (epc:call-sync importmagic-server
                                'get_import_statement
@@ -56,7 +56,8 @@ then added to the import list at the top of the file."
                                      nil
                                      nil
                                      options)))
-        (message (importmagic--query-imports-for-statement choice))))))
+        (importmagic--query-imports-for-statement-and-fix choice)
+        (message "Inserted %s" choice)))))
 
 
 
