@@ -12,11 +12,17 @@ server = EPCServer(('localhost', 0))
 
 index = None
 
-
+# Since the transformation from Emacs Lisp to Python causes strings to
+# be lists of separate characters, we need a function that can provide
+# a regular string, which is this one.
 def _stringify(input_param):
     return ''.join(input_param)
 
 
+# Construct the symbol index specified by the paths given. As the
+# names suggest, these paths correspond to sys path and user_path. We
+# still have to figure out if sys.path and user_path default values
+# are ok.
 def _build_index(sys_path=sys.path, user_path=None):
     # since index is a global variable, need the global keyword. I did
     # not know this
@@ -43,12 +49,14 @@ def _build_index(sys_path=sys.path, user_path=None):
         sys.exit(-1)
 
 
+# Launch a thread that builds the index.
 def build_index(user_path, sys_path):
     thread = threading.Thread(
         target=_build_index, daemon=True, args=(user_path, sys_path))
     thread.start()
 
 
+# Returns a list of every unresolved symbol in source.
 @server.register_function
 def get_unresolved_symbols(*source):
     source = _stringify(source)
@@ -59,6 +67,9 @@ def get_unresolved_symbols(*source):
     return list(unres)
 
 
+# Returns a list of candidates that can import the queried symbol. The
+# returned list is ordered by score, meaning that the first element is
+# more likely to be appropriate.
 @server.register_function
 def get_candidates_for_symbol(*symbol):
     symbol = _stringify(symbol)
@@ -99,16 +110,6 @@ def get_import_statement(*source_and_import):
     start, end, new_statement = imports.get_update()
 
     return [start, end, new_statement]
-
-
-@server.register_function
-def echo(*arg):
-    # Should return arg + every letter in the alphabet
-    rval = []
-    for e in arg:
-        thestr = _stringify(e)
-        rval.append([thestr + ' como estas', thestr + 'que tal'])
-    return rval
 
 
 server.print_port()

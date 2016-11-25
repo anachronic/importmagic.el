@@ -4,12 +4,12 @@
 
 (require 'epc)
 
-(defvar importmagic-server (epc:start-epc "python" '("tester.py"))
+(defvar importmagic-server (epc:start-epc "python" '("importmagicserver.py"))
   "A variable that holds the importmagic.el EPC server.")
 
 
-(epc:stop-epc importmagic-server)
-(setq importmagic-server (epc:start-epc "python" '("tester.py")))
+;; (epc:stop-epc importmagic-server)
+;; (setq importmagic-server (epc:start-epc "python" '("importmagicserver.py")))
 
 
 (defun importmagic--buffer-as-string ()
