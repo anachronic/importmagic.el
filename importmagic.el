@@ -10,9 +10,11 @@
 
 (epc:stop-epc importmagic-server)
 (setq importmagic-server (epc:start-epc "python" '("tester.py")))
-(epc:call-sync importmagic-server
-               'get_candidates_for_symbol
-               `(,buffer-file-name ))
+
+
+(defun importmagic--buffer-as-string ()
+  "Return the whole contents of the buffer as a single string."
+  (buffer-substring-no-properties (point-min) (point-max)))
 
 (defun importmagic--fix-imports (import-block start end)
   "Insert given IMPORT-BLOCK with import fixups in the current
@@ -31,7 +33,7 @@ buffer starting in line START and ending in line END."
   "Query importmagic server for STATEMENT imports in the current buffer."
   (let* ((specs (epc:call-sync importmagic-server
                                'get_import_statement
-                               `(,buffer-file-name ,statement)))
+                               `(,(importmagic--buffer-as-string) ,statement)))
          (start (car specs))
          (end (cadr specs))
          (theblock (caddr specs)))
@@ -66,7 +68,7 @@ then added to the import list at the top of the file."
 
 (defun importmagic--get-unresolved-symbols ()
   "Query the RPC server for every unresolved symbol in the current file."
-  (epc:call-sync importmagic-server 'get_unresolved_symbols buffer-file-name))
+  (epc:call-sync importmagic-server 'get_unresolved_symbols (importmagic--buffer-as-string)))
 
 (defun importmagic-fix-imports ()
   "Fix every possible import in the file."

@@ -50,13 +50,11 @@ def build_index(user_path, sys_path):
 
 
 @server.register_function
-def get_unresolved_symbols(*filepath):
-    path = _stringify(filepath)
+def get_unresolved_symbols(*source):
+    source = _stringify(source)
 
-    with open(path, 'r') as f:
-        source = f.read()
-        scope = importmagic.Scope.from_source(source)
-        unres, unref = scope.find_unresolved_and_unreferenced_symbols()
+    scope = importmagic.Scope.from_source(source)
+    unres, unref = scope.find_unresolved_and_unreferenced_symbols()
 
     return list(unres)
 
@@ -82,11 +80,8 @@ def get_candidates_for_symbol(*symbol):
 # chosen import statement.
 @server.register_function
 def get_import_statement(*source_and_import):
-    filepath = _stringify(source_and_import[0])
+    source = _stringify(source_and_import[0])
     import_statement = _stringify(source_and_import[1])
-
-    with open(filepath, 'r') as f:
-        source = f.read()
 
     imports = importmagic.importer.Imports(index, source)
 
