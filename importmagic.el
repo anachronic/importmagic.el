@@ -68,6 +68,19 @@ then added to the import list at the top of the file."
   "Query the RPC server for every unresolved symbol in the current file."
   (epc:call-sync importmagic-server 'get_unresolved_symbols buffer-file-name))
 
+(defun importmagic-fix-imports ()
+  "Fix every possible import in the file."
+  (interactive)
+  (let ((unresolved (importmagic--get-unresolved-symbols))
+        (no-candidates '()))
+    (dolist (symbol unresolved)
+      (condition-case nil
+          (importmagic-fix-symbol symbol)
+        (error (setq no-candidates (push symbol no-candidates)))))
+    (when no-candidates
+      (message "Symbols with no candidates: %s" no-candidates))))
+
+
 
 
 
