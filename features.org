@@ -16,18 +16,66 @@ This file is intended to *help the developing process*.
       * [X] Write a function that returns where to put the new
         import. Actually we may or may not need this function, it
         really depends on how Python imports should be put in a buffer
-   2. [ ] Write the actual =importmagic.el= file using EPC.
-      * [ ] Write a function that starts the RPC server on buffer
+   2. [-] Write the actual =importmagic.el= file using EPC.
+      * [X] Write a function that starts the RPC server on buffer
         initialization.
-      * [ ] Write a function that queries the server for the unresolved
+      * [X] Write a function that queries the server for the unresolved
         symbols to import and shows the candidates using
-        =completing-read= or something along those lines. Do that for
-        every candidate on each unimported symbol.
-      * [ ] Write a function that actually inserts the suggested import
+        =completing-read= or something along those lines.
+      * [X] Write a function that actually inserts the suggested import
         in the buffer /without/ saving it
+      * [ ] Write a function that queries for *every* unimported
+        symbol (that has candidates, obviously).
    3. [ ] Write a *good* README file.
    4. [ ] Test it and bind it to a key.
    5. [ ] Use it for profit.
    6. [ ] Use [[https://github.com/cask/cask][Cask]]. Make tests for the package and actually create a
       package
    7. [ ] Maybe submit it to MELPA.
+
+** Finding a good key to bind importmagic-fix-symbol-at-point
+
+   Until now we have the function stated above
+   (=importmagic-fix-symbol-at-point=) which successfully modifies the
+   buffer and inserts the selected import candidate into it. So, need
+   a key to bind to this action.
+
+   I always liked IntelliJ's =M-RET= to do this. However, it might be
+   the case that the user -pretty much like me- has =M-RET= bound to
+   something else, and it would be kind of a bummer to have to get rid
+   of whatever that key binding does in order to just import symbols.
+
+   So I got an idea: we can make (and I actually did make it)
+   =importmagic-fix-symbol-at-point= fail if there's no
+   candidates. I'll explain why that is a desirable behavior after
+   giving the general idea.
+
+   What we ultimately want to do is using =M-RET= non obstrusively,
+   or, to put it in Emacs terms, we want to kind of make a /dwim/
+   command: If there's an error at point, then query for imports of
+   symbol at point, if there's no candidates or there's no error at
+   point regarding unknown symbols, then just do a normal =M-RET=. I
+   don't know how, but *I'm pretty sure that that's possible with
+   Emacs*. Anyway, here's a little code snippet to detect where there
+   are errors at point with =Flycheck=:
+
+   #+BEGIN_SRC emacs-lisp
+   (eq (point) (flycheck-next-error-pos 1))
+   #+END_SRC
+
+   Specifically for Python, we should also check the kind of error. So
+   we'll need to read some documentation for that, and it, of course,
+   depends on the linter.
+
+   After that, we could do something like this:
+
+   #+BEGIN_SRC emacs-lisp
+     (condition-case nil
+         (importmagic-fix-symbol-at-point)
+       (error "Do normal M-RET key behavior"))
+   #+END_SRC
+
+   And then, of course, we could bind it to =M-RET= safely. Of course,
+   the code snippet above doesn't check for flycheck errors, but you
+   get the idea. I'll actually have to modify
+   =importmagic-fix-symbol-at-point=. Cool challenge, huh?
