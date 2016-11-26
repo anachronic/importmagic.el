@@ -1,5 +1,3 @@
-;; -*- lexical-binding: t -*-
-
 (require 'f)
 
 (let ((impmagic-dir (f-dirname (f-dirname (f-this-file)))))
