@@ -11,6 +11,8 @@
 
 (defvar importmagic-auto-update-index t
   "Set to nil if you don't want to auto-update importmagic's symbol index after saving.")
+(defvar importmagic-server nil
+  "The importmagic index server.")
 
 ;;;###autoload
 (define-minor-mode importmagic-mode
@@ -24,11 +26,10 @@
   (let ((importmagic-path (f-slash (f-dirname (locate-library "importmagic")))))
     (if importmagic-mode
         (progn
-          (make-variable-buffer-local
-           (defvar importmagic-server
-             (epc:start-epc "python"
-                            `(,(f-join importmagic-path "importmagicserver.py")))
-             "The importmagic server for the current buffer. It is local."))
+          (make-variable-buffer-local 'importmagic-server)
+          (setq importmagic-server
+                (epc:start-epc "python"
+                               `(,(f-join importmagic-path "importmagicserver.py"))))
           (when importmagic-auto-update-index
             (add-hook 'after-save-hook 'importmagic--auto-update-index))
           (importmagic--async-add-dir (f-dirname (f-this-file))))
