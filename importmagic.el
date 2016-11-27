@@ -9,6 +9,9 @@
 ;; nullprogram!
 ;; http://nullprogram.com/blog/2013/02/06/
 
+(defvar importmagic-auto-update-index t
+  "Set to nil if you don't want to auto-update importmagic's symbol index after saving.")
+
 ;;;###autoload
 (define-minor-mode importmagic-mode
   :init-value nil
@@ -19,14 +22,20 @@
   (when (not (derived-mode-p 'python-mode))
     (error "Importmagic only works with Python buffers"))
   (if importmagic-mode
-      (make-variable-buffer-local
-       (defvar importmagic-server
-         (epc:start-epc "python"
-                        `(,(f-join (f-dirname (locate-library "importmagic"))
-                                   "importmagicserver.py")))
-         "The importmagic server for the current buffer. It is local."))
+      (progn
+        (make-variable-buffer-local
+         (defvar importmagic-server
+           (epc:start-epc "python"
+                          `(,(f-join (f-dirname (locate-library "importmagic"))
+                                     "importmagicserver.py")))
+           "The importmagic server for the current buffer. It is local."))
+        (when importmagic-auto-update-index
+          (add-hook 'after-save-hook 'importmagic--auto-update-index))
+        (importmagic--auto-update-index))
     (when (boundp 'importmagic-server)
-      (epc:stop-epc importmagic-server))))
+      (epc:stop-epc importmagic-server))
+    (when importmagic-auto-update-index
+      (remove-hook 'after-save-hook 'importmagic--auto-update-index))))
 
 (defun importmagic--buffer-as-string ()
   "Return the whole contents of the buffer as a single string."
@@ -63,7 +72,7 @@ buffer starting in line START and ending in line END."
                                 'get_candidates_for_symbol
                                 symbol)))
     (if (not options)
-        (error "No suitable candidates found for %s" symbol)
+        (error "[importmagic] No suitable candidates found for %s" symbol)
       (let ((choice (completing-read (concat "Querying for " symbol ": ")
                                      options
                                      nil
@@ -72,7 +81,7 @@ buffer starting in line START and ending in line END."
                                      nil
                                      options)))
         (importmagic--query-imports-for-statement-and-fix choice)
-        (message "Inserted %s" choice)))))
+        (message "[importmagic] Inserted %s" choice)))))
 
 (defun importmagic-fix-symbol-at-point ()
   "Fix imports for symbol at point."
@@ -93,10 +102,14 @@ buffer starting in line START and ending in line END."
           (importmagic-fix-symbol symbol)
         (error (setq no-candidates (push symbol no-candidates)))))
     (when no-candidates
-      (message "Symbols with no candidates: %s" no-candidates))))
+      (message "[importmagic] Symbols with no candidates: %s" no-candidates))))
 
+(defun importmagic--auto-update-index ()
+  "Update importmagic symbol index with current file or directory."
+  (when (derived-mode-p 'python-mode)
+    (importmagic-add-index 'update)))
 
-(defun importmagic-update-index ()
+(defun importmagic-add-index (&optional action)
   "Intelligently update symbol index depending on the current directory/file."
   (interactive)
   (let* ((thisfile (f-this-file))
@@ -107,15 +120,18 @@ buffer starting in line START and ending in line END."
         (progn
           (importmagic--add-path-to-index thisdir)
           (setq path thisdir))
-      (importmagic-add-path-to-index thisfile)
+      (importmagic--add-path-to-index thisfile)
       (setq path thisfile))
-    (message "Indexed %s for importmagic" path)))
+    (if (and action
+             (eq action 'update))
+        (message "[importmagic] SUCCESS: Update symbol index."))
+    (message "[importmagic] Indexed %s for importmagic" path)))
 
 (defun importmagic--add-path-to-index (path)
   "Add the specified PATH to the server's symbol index."
   (let ((return-val (epc:call-sync importmagic-server 'add_path_to_index path)))
     (when (stringp return-val)
-      (error "Symbol index not ready, hold on please"))))
+      (error "[importmagic] Symbol index not ready, hold on please"))))
 
 
 
