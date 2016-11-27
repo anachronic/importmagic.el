@@ -5,13 +5,28 @@
 (require 'epc)
 (require 'f)
 
-(defvar importmagic-server (epc:start-epc "python" '("importmagicserver.py"))
-  "A variable that holds the importmagic.el EPC server.")
+;; This process of creating a mode is rather painless. Thank you
+;; nullprogram!
+;; http://nullprogram.com/blog/2013/02/06/
 
-
-;; (epc:stop-epc importmagic-server)
-;; (setq importmagic-server (epc:start-epc "python" '("importmagicserver.py")))
-
+;;;###autoload
+(define-minor-mode importmagic-mode
+  :init-value nil
+  :lighter " import"
+  :keymap (let ((keymap (make-sparse-keymap)))
+            (define-key keymap (kbd "C-c i") 'importmagic-fix-symbol-at-point)
+            keymap)
+  (when (not (derived-mode-p 'python-mode))
+    (error "Importmagic only works with Python buffers"))
+  (if importmagic-mode
+      (make-variable-buffer-local
+       (defvar importmagic-server
+         (epc:start-epc "python"
+                        `(,(f-join (f-dirname (locate-library "importmagic"))
+                                   "importmagicserver.py")))
+         "The importmagic server for the current buffer. It is local."))
+    (when (boundp 'importmagic-server)
+      (epc:stop-epc importmagic-server))))
 
 (defun importmagic--buffer-as-string ()
   "Return the whole contents of the buffer as a single string."
@@ -30,6 +45,7 @@ buffer starting in line START and ending in line END."
         (delete-region start-pos end-pos)
         (insert import-block)))))
 
+
 (defun importmagic--query-imports-for-statement-and-fix (statement)
   "Query importmagic server for STATEMENT imports in the current buffer."
   (let* ((specs (epc:call-sync importmagic-server
@@ -39,7 +55,6 @@ buffer starting in line START and ending in line END."
          (end (cadr specs))
          (theblock (caddr specs)))
     (importmagic--fix-imports theblock start end)))
-
 
 (defun importmagic-fix-symbol (symbol)
   "Fix imports for SYMBOL in current buffer."
@@ -60,10 +75,7 @@ buffer starting in line START and ending in line END."
         (message "Inserted %s" choice)))))
 
 (defun importmagic-fix-symbol-at-point ()
-  "Query the RPC server for a suitable candidate to add to
-imports in order to correctly import the symbol at point. The
-default candidate is the most suitable. The selected candidate is
-then added to the import list at the top of the file."
+  "Fix imports for symbol at point."
   (interactive)
   (importmagic-fix-symbol (thing-at-point 'symbol t)))
 
@@ -83,24 +95,27 @@ then added to the import list at the top of the file."
     (when no-candidates
       (message "Symbols with no candidates: %s" no-candidates))))
 
-(defun importmagic--add-path-to-index (path)
-  "Add the specified PATH to the server's symbol index."
-  (let ((return-val (epc:call-sync importmagic-server 'add_path_to_index path)))
-    (if (stringp return-val)
-        (error "Symbol index not ready, hold on please")
-      (message "Indexed %s for importmagic" path))))
 
 (defun importmagic-update-index ()
   "Intelligently update symbol index depending on the current directory/file."
   (interactive)
   (let* ((thisfile (f-this-file))
          (thisdir (f-dirname thisfile))
-         (package (f-join thisdir "__init__.py")))
+         (package (f-join thisdir "__init__.py"))
+         (path))
     (if (f-exists? package)
-        (importmagic--add-path-to-index thisdir)
-      (importmagic-add-path-to-index thisfile))))
+        (progn
+          (importmagic--add-path-to-index thisdir)
+          (setq path thisdir))
+      (importmagic-add-path-to-index thisfile)
+      (setq path thisfile))
+    (message "Indexed %s for importmagic" path)))
 
-
+(defun importmagic--add-path-to-index (path)
+  "Add the specified PATH to the server's symbol index."
+  (let ((return-val (epc:call-sync importmagic-server 'add_path_to_index path)))
+    (when (stringp return-val)
+      (error "Symbol index not ready, hold on please"))))
 
 
 
