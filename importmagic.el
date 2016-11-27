@@ -31,7 +31,7 @@
              "The importmagic server for the current buffer. It is local."))
           (when importmagic-auto-update-index
             (add-hook 'after-save-hook 'importmagic--auto-update-index))
-          (importmagic--async-add-path (f-dirname (f-this-file))))
+          (importmagic--async-add-dir (f-dirname (f-this-file))))
       (when (boundp 'importmagic-server)
         (epc:stop-epc importmagic-server))
       (when importmagic-auto-update-index
@@ -133,10 +133,10 @@ buffer starting in line START and ending in line END."
     (when (stringp return-val)
       (error "[importmagic] Symbol index not ready, hold on please"))))
 
-(defun importmagic--async-add-path (path)
+(defun importmagic--async-add-dir (path)
   "Asynchronously add PATH to index symbol."
   (deferred:$
-    (epc:call-deferred importmagic-server 'add_path_to_index path)
+    (epc:call-deferred importmagic-server 'add_directory_to_index path)
     (deferred:nextc it
       `(lambda (result)
          (if (stringp result)

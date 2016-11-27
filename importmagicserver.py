@@ -1,6 +1,7 @@
 import sys
 import threading
 import importmagic
+import os
 from collections import deque
 from epc.server import EPCServer
 
@@ -11,6 +12,7 @@ server = EPCServer(('localhost', 0))
 # quality in this code
 
 index = None
+
 
 # Since the transformation from Emacs Lisp to Python causes strings to
 # be lists of separate characters, we need a function that can provide
@@ -121,6 +123,29 @@ def add_path_to_index(*path):
         return "Index not ready. Hang on a second."
 
     index.index_path(path)
+    return 0
+
+
+@server.register_function
+def add_directory_to_index(*path):
+    path = _stringify(path)
+
+    everything = os.listdir(path)
+    files = []
+    dirs = [d for d in everything if os.path.isdir(os.path.join(path, d))]
+
+    for something in everything:
+        if os.path.isfile(os.path.join(
+                path, something)) and something.endswith('.py'):
+            files.append(os.path.join(path, something))
+
+    for file in files:
+        index.index_path(file)
+
+    # Not sure about this one.
+    for dir in dirs:
+        index.index_path(dir)
+
     return 0
 
 
