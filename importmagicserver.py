@@ -112,6 +112,18 @@ def get_import_statement(*source_and_import):
     return [start, end, new_statement]
 
 
+@server.register_function
+def add_path_to_index(*path):
+    path = _stringify(path)
+
+    global index
+    if index is None:
+        return "Index not ready. Hang on a second."
+
+    index.index_path(path)
+    return 0
+
+
 server.print_port()
 _build_index()
 server.serve_forever()

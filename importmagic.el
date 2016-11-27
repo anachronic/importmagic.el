@@ -3,6 +3,7 @@
 ;;; Code:
 
 (require 'epc)
+(require 'f)
 
 (defvar importmagic-server (epc:start-epc "python" '("importmagicserver.py"))
   "A variable that holds the importmagic.el EPC server.")
@@ -82,7 +83,22 @@ then added to the import list at the top of the file."
     (when no-candidates
       (message "Symbols with no candidates: %s" no-candidates))))
 
+(defun importmagic--add-path-to-index (path)
+  "Add the specified PATH to the server's symbol index."
+  (let ((return-val (epc:call-sync importmagic-server 'add_path_to_index path)))
+    (if (stringp return-val)
+        (error "Symbol index not ready, hold on please")
+      (message "Indexed %s for importmagic" path))))
 
+(defun importmagic-update-index ()
+  "Intelligently update symbol index depending on the current directory/file."
+  (interactive)
+  (let* ((thisfile (f-this-file))
+         (thisdir (f-dirname thisfile))
+         (package (f-join thisdir "__init__.py")))
+    (if (f-exists? package)
+        (importmagic--add-path-to-index thisdir)
+      (importmagic-add-path-to-index thisfile))))
 
 
 
