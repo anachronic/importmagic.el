@@ -56,7 +56,8 @@ def _build_index(sys_path=sys.path, user_path=None):
 # Launch a thread that builds the index.
 def build_index(sys_path=sys.path, user_path=None):
     thread = threading.Thread(
-        target=_build_index, daemon=True, args=(user_path, sys_path))
+        target=_build_index, args=(user_path, sys_path))
+    thread.daemon = True
     thread.start()
 
 
