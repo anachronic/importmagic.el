@@ -10,7 +10,10 @@
 
 ;; Server available
 (ert-deftest importmagic-server-available ()
-  (should importmagic-server))
+  (with-temp-buffer
+    (python-mode)
+    (importmagic-mode)
+    (should importmagic-server)))
 
 
 ;; Let's define a bad buffer
@@ -28,6 +31,8 @@ future = datetime.timedelta(hours=1)
 (ert-deftest importmagic-unresolved-symbols ()
   (with-temp-buffer
     (insert importmagic-bad-buffer-test)
+    (python-mode)
+    (importmagic-mode)
     (let ((expected-symbols '("os.path.join" "os.getcwd" "datetime.timedelta" "datetime.now"))
           (actual-symbols (importmagic--get-unresolved-symbols)))
       (dolist (symbol expected-symbols)
@@ -40,6 +45,8 @@ future = datetime.timedelta(hours=1)
 ;; Test that importmagic-fix-imports ends up with a good buffer
 (ert-deftest importmagic-fix-imports-good ()
   (with-temp-buffer
+    (python-mode)
+    (importmagic-mode)
     (progn
       (insert importmagic-bad-buffer-test)
       (cl-letf (((symbol-function 'completing-read)
@@ -59,6 +66,8 @@ future = datetime.timedelta(hours=1)
 ;; symbol "os" by manually typing it.
 (ert-deftest importmagic-query-symbol-good ()
   (with-temp-buffer
+    (python-mode)
+    (importmagic-mode)
     (insert "os.path")
     (cl-letf (((symbol-function 'completing-read)
                (lambda (prompt collection &optional predicate require-match initial history default inherit-input-method)
@@ -69,6 +78,8 @@ future = datetime.timedelta(hours=1)
 ;; Test symbol at point is ok.
 (ert-deftest importmagic-fix-at-point-good-2 ()
   (with-temp-buffer
+    (python-mode)
+    (importmagic-mode)
     (insert "os.path")
     (backward-char 6)
     (cl-letf (((symbol-function 'completing-read)
