@@ -7,7 +7,7 @@ Elpy and it works ok.
 
 This file is intended to *help the developing process*.
 
-** [1/7] Work process
+** [4/7] Work process
 
    1. [X] Write the Python EPC Server:
       * [X] Write a function that returns unimported symbols
@@ -16,7 +16,7 @@ This file is intended to *help the developing process*.
       * [X] Write a function that returns where to put the new
         import. Actually we may or may not need this function, it
         really depends on how Python imports should be put in a buffer
-   2. [-] Write the actual =importmagic.el= file using EPC.
+   2. [X] Write the actual =importmagic.el= file using EPC.
       * [X] Write a function that starts the RPC server on buffer
         initialization.
       * [X] Write a function that queries the server for the unresolved
@@ -24,12 +24,12 @@ This file is intended to *help the developing process*.
         =completing-read= or something along those lines.
       * [X] Write a function that actually inserts the suggested import
         in the buffer /without/ saving it
-      * [ ] Write a function that queries for *every* unimported
+      * [X] Write a function that queries for *every* unimported
         symbol (that has candidates, obviously).
    3. [ ] Write a *good* README file.
-   4. [ ] Test it and bind it to a key.
+   4. [X] Test it and bind it to a key.
    5. [ ] Use it for profit.
-   6. [ ] Use [[https://github.com/cask/cask][Cask]]. Make tests for the package and actually create a
+   6. [X] Use [[https://github.com/cask/cask][Cask]]. Make tests for the package and actually create a
       package
    7. [ ] Maybe submit it to MELPA.
 

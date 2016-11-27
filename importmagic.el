@@ -110,8 +110,10 @@ buffer starting in line START and ending in line END."
   (when (derived-mode-p 'python-mode)
     (importmagic-add-index 'update)))
 
-(defun importmagic-add-index (&optional action)
-  "Intelligently update symbol index depending on the current directory/file."
+(defun importmagic-update-index (&optional action)
+  "Intelligently update symbol index depending on the current directory/file.
+
+If ACTION is 'update, then just display a different message."
   (interactive)
   (let* ((thisfile (f-this-file))
          (thisdir (f-dirname thisfile))
@@ -125,8 +127,8 @@ buffer starting in line START and ending in line END."
       (setq path thisfile))
     (if (and action
              (eq action 'update))
-        (message "[importmagic] SUCCESS: Update symbol index."))
-    (message "[importmagic] Indexed %s for importmagic" path)))
+        (message "[importmagic] SUCCESS: Update symbol index.")
+      (message "[importmagic] Indexed %s for importmagic" path))))
 
 (defun importmagic--add-path-to-index (path)
   "Add the specified PATH to the server's symbol index."

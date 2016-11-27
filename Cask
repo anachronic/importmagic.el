@@ -4,7 +4,7 @@
 (package "importmagic" "1.0.0" "Resolve unimported symbols in Python with importmagic")
 
 (depends-on "epc")
+(depends-on "f")
 
 (development
- (depends-on "f")
  (depends-on "ert-runner"))
