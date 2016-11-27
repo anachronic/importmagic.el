@@ -1,9 +1,11 @@
+import os
 import sys
 import threading
-import importmagic
-import os
 from collections import deque
+
+import importmagic
 from epc.server import EPCServer
+
 
 server = EPCServer(('localhost', 0))
 
@@ -52,7 +54,7 @@ def _build_index(sys_path=sys.path, user_path=None):
 
 
 # Launch a thread that builds the index.
-def build_index(user_path, sys_path):
+def build_index(sys_path=sys.path, user_path=None):
     thread = threading.Thread(
         target=_build_index, daemon=True, args=(user_path, sys_path))
     thread.start()
@@ -135,9 +137,10 @@ def add_directory_to_index(*path):
     dirs = [d for d in everything if os.path.isdir(os.path.join(path, d))]
 
     for something in everything:
-        if os.path.isfile(os.path.join(
-                path, something)) and something.endswith('.py'):
-            files.append(os.path.join(path, something))
+        if os.path.isfile(os.path.join(path, something)):
+            if something.endswith('.py') and not something.startswith(
+                    '__init__'):
+                files.append(os.path.join(path, something))
 
     for file in files:
         index.index_path(file)
@@ -149,6 +152,6 @@ def add_directory_to_index(*path):
     return 0
 
 
+build_index()
 server.print_port()
-_build_index()
 server.serve_forever()

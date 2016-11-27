@@ -13,9 +13,11 @@
   "Set to nil if you don't want to auto-update importmagic's symbol index after saving.")
 (defvar importmagic-server nil
   "The importmagic index server.")
+(make-variable-buffer-local 'importmagic-server)
 
 ;;;###autoload
 (define-minor-mode importmagic-mode
+  "A mode that lets you autoimport unresolved Python symbols."
   :init-value nil
   :lighter " import"
   :keymap (let ((keymap (make-sparse-keymap)))
@@ -26,17 +28,20 @@
   (let ((importmagic-path (f-slash (f-dirname (locate-library "importmagic")))))
     (if importmagic-mode
         (progn
-          (make-variable-buffer-local 'importmagic-server)
           (setq importmagic-server
                 (epc:start-epc "python"
                                `(,(f-join importmagic-path "importmagicserver.py"))))
-          (when importmagic-auto-update-index
-            (add-hook 'after-save-hook 'importmagic--auto-update-index))
+          (add-hook 'kill-buffer-hook 'importmagic--teardown-epc)
           (importmagic--async-add-dir (f-dirname (f-this-file))))
-      (when (boundp 'importmagic-server)
-        (epc:stop-epc importmagic-server))
-      (when importmagic-auto-update-index
-        (remove-hook 'after-save-hook 'importmagic--auto-update-index)))))
+      (epc:stop-epc importmagic-server))))
+
+(defun importmagic--teardown-epc ()
+  "Stop the EPC server for the current buffer."
+  (when (and (derived-mode-p 'python-mode)
+             importmagic-server
+             (symbolp 'importmagic-mode)
+             (symbol-value 'importmagic-mode))
+    (epc:stop-epc importmagic-server)))
 
 (defun importmagic--buffer-as-string ()
   "Return the whole contents of the buffer as a single string."
@@ -106,35 +111,10 @@ buffer starting in line START and ending in line END."
       (message "[importmagic] Symbols with no candidates: %s" no-candidates))))
 
 (defun importmagic--auto-update-index ()
-  "Update importmagic symbol index with current file or directory."
+  "Update importmagic symbol index with current directory."
   (when (derived-mode-p 'python-mode)
-    (importmagic-add-index 'update)))
-
-(defun importmagic-update-index (&optional action)
-  "Intelligently update symbol index depending on the current directory/file.
-
-If ACTION is 'update, then just display a different message."
-  (interactive)
-  (let* ((thisfile (f-this-file))
-         (thisdir (f-dirname thisfile))
-         (package (f-join thisdir "__init__.py"))
-         (path))
-    (if (f-exists? package)
-        (progn
-          (importmagic--add-path-to-index thisdir)
-          (setq path thisdir))
-      (importmagic--add-path-to-index thisfile)
-      (setq path thisfile))
-    (if (and action
-             (eq action 'update))
-        (message "[importmagic] SUCCESS: Update symbol index.")
-      (message "[importmagic] Indexed %s for importmagic" path))))
-
-(defun importmagic--add-path-to-index (path)
-  "Add the specified PATH to the server's symbol index."
-  (let ((return-val (epc:call-sync importmagic-server 'add_path_to_index path)))
-    (when (stringp return-val)
-      (error "[importmagic] Symbol index not ready, hold on please"))))
+    (importmagic--async-add-dir
+     (f-dirname (f-this-file)))))
 
 (defun importmagic--async-add-dir (path)
   "Asynchronously add PATH to index symbol."
