@@ -21,21 +21,21 @@
             keymap)
   (when (not (derived-mode-p 'python-mode))
     (error "Importmagic only works with Python buffers"))
-  (if importmagic-mode
-      (progn
-        (make-variable-buffer-local
-         (defvar importmagic-server
-           (epc:start-epc "python"
-                          `(,(f-join (f-dirname (locate-library "importmagic"))
-                                     "importmagicserver.py")))
-           "The importmagic server for the current buffer. It is local."))
-        (when importmagic-auto-update-index
-          (add-hook 'after-save-hook 'importmagic--auto-update-index))
-        (importmagic--auto-update-index))
-    (when (boundp 'importmagic-server)
-      (epc:stop-epc importmagic-server))
-    (when importmagic-auto-update-index
-      (remove-hook 'after-save-hook 'importmagic--auto-update-index))))
+  (let ((importmagic-path (f-slash (f-dirname (locate-library "importmagic")))))
+    (if importmagic-mode
+        (progn
+          (make-variable-buffer-local
+           (defvar importmagic-server
+             (epc:start-epc "python"
+                            `(,(f-join importmagic-path "importmagicserver.py")))
+             "The importmagic server for the current buffer. It is local."))
+          (when importmagic-auto-update-index
+            (add-hook 'after-save-hook 'importmagic--auto-update-index))
+          (importmagic--async-add-path (f-dirname (f-this-file))))
+      (when (boundp 'importmagic-server)
+        (epc:stop-epc importmagic-server))
+      (when importmagic-auto-update-index
+        (remove-hook 'after-save-hook 'importmagic--auto-update-index)))))
 
 (defun importmagic--buffer-as-string ()
   "Return the whole contents of the buffer as a single string."
@@ -132,6 +132,16 @@ buffer starting in line START and ending in line END."
   (let ((return-val (epc:call-sync importmagic-server 'add_path_to_index path)))
     (when (stringp return-val)
       (error "[importmagic] Symbol index not ready, hold on please"))))
+
+(defun importmagic--async-add-path (path)
+  "Asynchronously add PATH to index symbol."
+  (deferred:$
+    (epc:call-deferred importmagic-server 'add_path_to_index path)
+    (deferred:nextc it
+      `(lambda (result)
+         (if (stringp result)
+             (error "[importmagic] Couldn't update index")
+           (message "[importmagic] Indexed %s" ,path))))))
 
 
 
