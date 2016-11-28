@@ -8,7 +8,7 @@
 (require 'importmagic)
 
 
-;; Server available
+;; Server available and importmagic can run on Python-mode buffers
 (ert-deftest importmagic-server-available ()
   (with-temp-buffer
     (python-mode)
@@ -87,5 +87,54 @@ future = datetime.timedelta(hours=1)
                  "import os")))
       (importmagic-fix-symbol-at-point)
       (should (s-contains? "import os" (importmagic--buffer-as-string))))))
+
+
+;; Should fail on other major modes. Maybe add more for completeness?
+(ert-deftest importmagic-only-python ()
+  (with-temp-buffer
+    (fundamental-mode)
+    (should-error (importmagic-mode)))
+  (with-temp-buffer
+    (c-mode)
+    (should-error (importmagic-mode))))
+
+;; Test that EPC variable is initially nil for a buffer, even a Python
+;; buffer. This will fail using M-x ert if you have a hook on python
+;; mode to activate importmagic-mode
+(ert-deftest importmagic-server-unavailable ()
+  (with-temp-buffer
+    (fundamental-mode)
+    (should (not importmagic-server)))
+  (with-temp-buffer
+    (python-mode)
+    (should (not importmagic-server))))
+
+;; Self-explanatory: Server should be stopped and references should be
+;; destroyed upon importmagic's deactivation
+(ert-deftest importmagic-epc-server-is-actually-destroyed ()
+  (with-temp-buffer
+    (python-mode)
+    (importmagic-mode)
+    (should importmagic-server)
+    (importmagic-mode -1)
+    (should (not importmagic-server))))
+
+;; Other buffers shouldn't inherit current buffer's EPC server
+(ert-deftest importmagic-epc-server-is-actually-buffer-local ()
+  (let ((buffer1 (get-buffer-create "*A Python Buffer*"))
+        (buffer2 (get-buffer-create "*Another Python buffer*")))
+    (unwind-protect
+        (with-temp-buffer buffer1
+                          (python-mode)
+                          (importmagic-mode)
+                          (should importmagic-server)
+                          (with-temp-buffer buffer2
+                                            (python-mode)
+                                            (should (not importmagic-server))
+                                            (importmagic-mode)
+                                            (should importmagic-server))))))
+
+
+
 
 ;;; importmagic-tests.el ends here

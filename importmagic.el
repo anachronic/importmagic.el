@@ -33,7 +33,8 @@
                                `(,(f-join importmagic-path "importmagicserver.py"))))
           (add-hook 'kill-buffer-hook 'importmagic--teardown-epc)
           (importmagic--async-add-dir (f-dirname (f-this-file))))
-      (epc:stop-epc importmagic-server))))
+      (epc:stop-epc importmagic-server)
+      (setq importmagic-server nil))))
 
 (defun importmagic--teardown-epc ()
   "Stop the EPC server for the current buffer."
