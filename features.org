@@ -7,7 +7,7 @@ Elpy and it works ok.
 
 This file is intended to *help the developing process*.
 
-** [4/7] Work process
+** [5/7] Work process
 
    1. [X] Write the Python EPC Server:
       * [X] Write a function that returns unimported symbols
@@ -26,12 +26,47 @@ This file is intended to *help the developing process*.
         in the buffer /without/ saving it
       * [X] Write a function that queries for *every* unimported
         symbol (that has candidates, obviously).
-   3. [ ] Write a *good* README file.
+   3. [X] Write a *good* README file.
    4. [X] Test it and bind it to a key.
    5. [ ] Use it for profit.
    6. [X] Use [[https://github.com/cask/cask][Cask]]. Make tests for the package and actually create a
       package
    7. [ ] Maybe submit it to MELPA.
+
+** Work for the Nov 28 - Dic 05 week
+
+   The hard work for this package is mostly written and it should be
+   ready to submit to MELPA. However, I do not want to submit a
+   package without bf *real* testing. By that I mean I should test my
+   own package myself /outside/ =ERT= and the Emacs Lisp
+   environment. If everything goes well I should submit this package
+   to MELPA and get it out.
+
+   There are a few issues concerning this project that need some
+   attention:
+
+   1. Get the copyright stuff into =importmagic.el= and possibly
+      =importmagicserver.py=. That should set the package ready to
+      submit it.
+   2. Record a screencast with [[https://github.com/Malabarba/camcorder.el][camcorder]] that should what this package
+      can do. I feel like it's very important to do that, because
+      *most* packages don't include a screenshot, and it *really
+      bothers me* that you don't know what they look like. It's like
+      they're forcing you to install their packages.
+   3. Get better key bindings, or even better, reuse some already
+      bound key bindings to fix imports.
+
+   Those are quite easy to do, not much work there, but there are two
+   issues that need further investigation:
+
+   1. Use =M-RET= to fix errors: this issue has an entire subsection
+      below. This requires Flycheck to be running.
+   2. Test that locally defined symbols can actually be imported using
+      importmagic. I do not know the scope of importmagic, but it
+      looks like it follows some weird convention. It can however
+      import classes from locally defined modules. This test can be
+      done on a real world, but I haven't really figured out how to do
+      it from within =ERT=. I'll have to look further into it.
 
 ** Finding a good key to bind importmagic-fix-symbol-at-point
 
