@@ -32,7 +32,7 @@
                 (epc:start-epc "python"
                                `(,(f-join importmagic-path "importmagicserver.py"))))
           (add-hook 'kill-buffer-hook 'importmagic--teardown-epc)
-          (importmagic--async-add-dir (f-dirname (f-this-file))))
+          (importmagic--auto-update-index))
       (epc:stop-epc importmagic-server)
       (setq importmagic-server nil))))
 
@@ -113,7 +113,8 @@ buffer starting in line START and ending in line END."
 
 (defun importmagic--auto-update-index ()
   "Update importmagic symbol index with current directory."
-  (when (derived-mode-p 'python-mode)
+  (when (and (derived-mode-p 'python-mode)
+             (f-this-file))
     (importmagic--async-add-dir
      (f-dirname (f-this-file)))))
 
