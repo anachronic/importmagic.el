@@ -28,12 +28,22 @@
   (let ((importmagic-path (f-slash (f-dirname (locate-library "importmagic")))))
     (if importmagic-mode
         (progn
-          (setq importmagic-server
-                (epc:start-epc "python"
-                               `(,(f-join importmagic-path "importmagicserver.py"))))
-          (add-hook 'kill-buffer-hook 'importmagic--teardown-epc)
-          (importmagic--auto-update-index))
-      (epc:stop-epc importmagic-server)
+          (condition-case nil
+              (progn
+                (setq importmagic-server
+                      (epc:start-epc "python"
+                                     `(,(f-join importmagic-path "importmagicserver.py"))))
+                (add-hook 'kill-buffer-hook 'importmagic--teardown-epc)
+                (importmagic--auto-update-index))
+            (error (progn
+                     (when (epc:live-p importmagic-server)
+                       (epc:stop-epc importmagic-server))
+                     (setq importmagic-server nil)
+                     (message "Importmagic and/or epc not found. importmagic.el will not be working.")
+                     (importmagic-mode -1)))))
+      (when (and importmagic-server
+                 (epc:live-p importmagic-server))
+        (epc:stop-epc importmagic-server))
       (setq importmagic-server nil))))
 
 (defun importmagic--teardown-epc ()

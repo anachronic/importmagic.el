@@ -3,9 +3,13 @@ import sys
 import threading
 from collections import deque
 
-import importmagic
-from epc.server import EPCServer
+fail = False
 
+try:
+    import importmagic
+    from epc.server import EPCServer
+except ImportError:
+    fail = True
 
 server = EPCServer(('localhost', 0))
 
@@ -55,8 +59,7 @@ def _build_index(sys_path=sys.path, user_path=None):
 
 # Launch a thread that builds the index.
 def build_index(sys_path=sys.path, user_path=None):
-    thread = threading.Thread(
-        target=_build_index, args=(user_path, sys_path))
+    thread = threading.Thread(target=_build_index, args=(user_path, sys_path))
     thread.daemon = True
     thread.start()
 
@@ -117,6 +120,7 @@ def get_import_statement(*source_and_import):
     return [start, end, new_statement]
 
 
+# Adds the specified path to symbol index.
 @server.register_function
 def add_path_to_index(*path):
     path = _stringify(path)
@@ -151,6 +155,17 @@ def add_directory_to_index(*path):
         index.index_path(dir)
 
     return 0
+
+
+# This function should return True if there are no errors and false
+# otherwise
+@server.register_function
+def check_sanity(*nothing):
+    global fail
+    if fail:
+        return False
+
+    return True
 
 
 build_index()
