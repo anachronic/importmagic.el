@@ -3,13 +3,8 @@ import sys
 import threading
 from collections import deque
 
-fail = False
-
-try:
-    import importmagic
-    from epc.server import EPCServer
-except ImportError:
-    fail = True
+import importmagic
+from epc.server import EPCServer
 
 server = EPCServer(('localhost', 0))
 
@@ -155,17 +150,6 @@ def add_directory_to_index(*path):
         index.index_path(dir)
 
     return 0
-
-
-# This function should return True if there are no errors and false
-# otherwise
-@server.register_function
-def check_sanity(*nothing):
-    global fail
-    if fail:
-        return False
-
-    return True
 
 
 build_index()

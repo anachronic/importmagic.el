@@ -36,23 +36,26 @@
                 (add-hook 'kill-buffer-hook 'importmagic--teardown-epc)
                 (importmagic--auto-update-index))
             (error (progn
-                     (when (epc:live-p importmagic-server)
-                       (epc:stop-epc importmagic-server))
-                     (setq importmagic-server nil)
                      (message "Importmagic and/or epc not found. importmagic.el will not be working.")
-                     (importmagic-mode -1)))))
-      (when (and importmagic-server
-                 (epc:live-p importmagic-server))
-        (epc:stop-epc importmagic-server))
-      (setq importmagic-server nil))))
+                     (importmagic-mode -1) ;; This should take it to the stop server section.
+                     ))))
+      (importmagic--stop-server))))
 
 (defun importmagic--teardown-epc ()
   "Stop the EPC server for the current buffer."
   (when (and (derived-mode-p 'python-mode)
              importmagic-server
              (symbolp 'importmagic-mode)
-             (symbol-value 'importmagic-mode))
+             (symbol-value 'importmagic-mode)
+             (epc:live-p importmagic-server))
     (epc:stop-epc importmagic-server)))
+
+(defun importmagic--stop-server ()
+  "Stop the importmagic EPC server and tear it down."
+  (when (and importmagic-server
+             (epc:live-p importmagic-server))
+    (epc:stop-epc importmagic-server))
+  (setq importmagic-server nil))
 
 (defun importmagic--buffer-as-string ()
   "Return the whole contents of the buffer as a single string."
