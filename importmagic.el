@@ -34,6 +34,7 @@
                       (epc:start-epc "python"
                                      `(,(f-join importmagic-path "importmagicserver.py"))))
                 (add-hook 'kill-buffer-hook 'importmagic--teardown-epc)
+                (add-hook 'before-revert-hook 'importmagic--teardown-epc)
                 (importmagic--auto-update-index))
             (error (progn
                      (message "Importmagic and/or epc not found. importmagic.el will not be working.")
