@@ -68,7 +68,7 @@
   :init-value nil
   :lighter " import"
   :keymap (let ((keymap (make-sparse-keymap)))
-            (define-key keymap (kbd "C-c i") 'importmagic-fix-symbol-at-point)
+            (define-key keymap (kbd "C-c C-l") 'importmagic-fix-imports)
             keymap)
   (when (not (derived-mode-p 'python-mode))
     (error "Importmagic only works with Python buffers"))

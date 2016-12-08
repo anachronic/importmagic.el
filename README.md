@@ -3,15 +3,15 @@
 `importmagic.el` is an Emacs package inspired on
 @alecthomas's [importmagic](https://github.com/alecthomas/importmagic)
 library. It resolves unimported symbols in your Python buffers. This
-is what it looks like on my Emacs:
+is what it looks like on Emacs:
 
 ![Example of Import Magic at work](importmagic.gif)
 
 ## Usage
-The default behavior sets only one key binding: `C-c i`. It solves
-imports for the symbol at point, which works *great* when using a cool
-syntax checker like [Flycheck](http://www.flycheck.org/), because you
-can have visual aid for symbols that you need to import.
+The default behavior sets only one key binding: `C-c C-l`. It solves
+imports for every unresolved symbol in the buffer, prompting for one
+import at a time. If there are no imports found for a given symbol,
+importmagic will let you know at the end of the process.
 
 By default, `importmagic.el` will recursively index every symbol from
 the current buffer's directory, which means you should get fairly
@@ -27,16 +27,17 @@ Somewhere in your `init.el` or `.emacs` put these lines:
 
 ### Key bindings
 Every key binding is under the `importmagic-mode-map`. If you don't
-like the `C-c i` keybinding or want to add extra keys to your
+like the `C-c C-l` keybinding or want to add extra keys to your
 configuration, just set them like so:
 
 ``` emacs-lisp
 (define-key importmagic-mode-map (kbd "C-c C-f") 'importmagic-fix-symbol-at-point)
 ```
 
-As you can imagine, the above code sets the key binding `C-c C-f` to
-fix imports for the symbol at point. importmagic.el provides more
-functions than just these, read on if you're interested
+Note that the example above will override a defined key binding in the
+`python-mode-map`. You can do that as long as you feel the need to (as
+I did). This package is not really intended to interfer with the
+default bindings, though.
 
 ### Annoyances
 
@@ -44,11 +45,18 @@ Every package has its own annoyances, and this one is no
 exception. I'll try to describe here how to get rid of annoyances this
 package may produce.
 
+#### Key bindings
+
+I know the default key binding (`C-c C-l`) does not really help with
+mnemonics, but I didn't really want to take up any space from the
+default `python.el` key bindings. It is explained above how to change
+these key bindings though.
+
 #### Mode line
 
-Yes, all our mode lines are always cluttered, `importmagic.el`'s mode
-lighter is `import`. If you don't like its name or feel like it takes
-up too much space, you can
+Yes, all our mode lines are always cluttered and `importmagic.el`
+doesn't really help here: it's mode lighter is `import`. If you don't
+like its name or feel like it takes up too much space, you can
 use [this](https://github.com/myrjola/diminish.el) package to get rid
 of it. Put this line somewhere in your init file:
 
@@ -139,6 +147,13 @@ that it can import symbols that you're not currently using.
 Updates index for the current file. This can be useful if something
 changed in the current directory outside the current buffer and you
 need to import symbols from those modified files.
+
+## Known issues
+
+There seems to be an issue going on with Gtk symbols. It doesn't only
+affect importmagic, but it also affects
+Jedi. See
+[this issue](https://github.com/davidhalter/jedi/issues/531).
 
 ## Contributing
 Any kind of contribution is absolutely welcome.
