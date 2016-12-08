@@ -1,7 +1,7 @@
 (source gnu)
 (source melpa)
 
-(package "importmagic" "1.0.0" "Resolve unimported symbols in Python with importmagic")
+(package "importmagic" "1.0" "Fix Python imports using importmagic.")
 
 (depends-on "epc")
 (depends-on "f")

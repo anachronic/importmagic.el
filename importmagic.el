@@ -1,10 +1,10 @@
-;;; importmagic.el --- A package that fixes Python imports using importmagic.
+;;; importmagic.el --- Fix Python imports using importmagic.
 
 ;; Copyright (c) 2016 Nicolás Salas V.
 ;;
 ;; Author: Nicolás Salas V. <nikosalas@gmail.com>
 ;; URL: https://github.com/anachronic/importmagic.el
-;; Keywords: python, import, importmagic
+;; Keywords: languages, convenience
 ;; Version: 1.0
 ;; Package-Requires: ((f "0.11.0") (epc "0.1.0") (emacs "24.3"))
 
@@ -110,8 +110,7 @@
   (buffer-substring-no-properties (point-min) (point-max)))
 
 (defun importmagic--fix-imports (import-block start end)
-  "Insert given IMPORT-BLOCK with import fixups in the current
-buffer starting in line START and ending in line END."
+  "Insert given IMPORT-BLOCK with import fixups in the current buffer starting in line START and ending in line END."
   (save-restriction
     (save-excursion
       (widen)
