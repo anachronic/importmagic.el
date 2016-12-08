@@ -1,3 +1,13 @@
+"""
+importmagic.el server
+---------------------
+
+Copyright (c) 2016 Nicolás Salas V.
+Licensed under GPL3. See the LICENSE file for details
+
+"""
+
+
 import os
 import sys
 import threading

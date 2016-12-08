@@ -1,5 +1,52 @@
-;;; importmagic.el --- A package that autoimports using importmagic.
+;;; importmagic.el --- A package that fixes Python imports using importmagic.
+
+;; Copyright (c) 2016 Nicolás Salas V.
+;;
+;; Author: Nicolás Salas V. <nikosalas@gmail.com>
+;; URL: https://github.com/anachronic/importmagic.el
+;; Keywords: python, import, importmagic
+;; Version: 1.0
+;; Package-Requires: ((f "0.11.0") (epc "0.1.0") (emacs "24.3"))
+
+;; This file is not part of GNU Emacs.
+
+;; This program is free software: you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 ;;; Commentary:
+
+;; importmagic.el is a package intended to help in the Python
+;; development process by providing a way to fix unresolved imports in
+;; Python buffers, so if you had the following buffer:
+
+;; os.path.join('path1', 'path2')
+
+;; importmagic.el will provide you a set of functions that will let
+;; you fix the unresolved 'os' symbol.
+
+;; The functions can be read on the project's website:
+
+;; https://github.com/anachronic/importmagic.el
+
+;; It's worth noting that you will have to install two Python packages
+;; for this to work:
+;;
+;; - importmagic
+;; - epc
+;;
+;; If you don't have those, importmagic shall gracefully fail and let
+;; you know.
+
 ;;; Code:
 
 (require 'epc)
