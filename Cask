@@ -1,10 +1,7 @@
 (source gnu)
 (source melpa)
 
-(package "importmagic" "1.0" "Fix Python imports using importmagic.")
-
-(depends-on "epc")
-(depends-on "f")
+(package-file "importmagic.el")
 
 (development
  (depends-on "ert-runner"))
