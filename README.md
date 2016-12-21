@@ -1,11 +1,80 @@
-# importmagic.el [![Build Status](https://travis-ci.org/anachronic/importmagic.el.svg?branch=master)](https://travis-ci.org/anachronic/importmagic.el)
+# importmagic.el [![Build Status](https://travis-ci.org/anachronic/importmagic.el.svg?branch=master)](https://travis-ci.org/anachronic/importmagic.el) [![MELPA](https://melpa.org/packages/importmagic-badge.svg)](https://melpa.org/#/importmagic)
+
 
 `importmagic.el` is an Emacs package inspired on
 @alecthomas's [importmagic](https://github.com/alecthomas/importmagic)
-library. It resolves unimported symbols in your Python buffers. This
-is what it looks like on Emacs:
+library. It resolves unimported symbols in your Python buffers.
 
 ![Example of Import Magic at work](importmagic.gif)
+
+## Installation
+
+There are a few steps to get this working, we'll go through them all
+
+### Python dependencies
+
+This package relies heavily on importmagic and EPC. You can get them
+from PyPi:
+
+``` shell
+$ pip install importmagic epc
+```
+
+You can either install them on each virtualenv you work or globally.
+
+### Installing the Emacs package
+
+It is recommended that you install this package
+from [MELPA](https://melpa.org/). There's still a way if you don't use
+it though.
+
+#### The MELPA way
+
+A simple way would be to just:
+
+``` emacs-lisp
+M-x package-install importmagic
+```
+
+You can also
+try [use-package](https://github.com/jwiegley/use-package):
+
+``` emacs-lisp
+(use-package importmagic
+    :ensure t
+    :config
+    (add-hook 'python-mode-hook 'importmagic-mode))
+```
+
+The above example is the minimal configuration in order to get started
+with importmagic.
+
+Whichever way you choose remember to add the hook to python mode:
+
+``` emacs-lisp
+(add-hook 'python-mode-hook 'importmagic-mode)
+```
+
+#### Without MELPA
+
+Download both `importmagic.el` and `importmagicserver.py`. Place them
+on a load-path of your emacs directory. For instance:
+`~/.emacs.d/site-lisp`
+
+If you haven't already, tell emacs you want to load files from that
+directory:
+
+``` emacs-lisp
+(add-to-list 'load-path (expand-file-name (concat user-emacs-directory "site-lisp/")))
+```
+
+Of course, you can choose to change the name of the `site-lisp`
+portion of the code. Don't forget to add the mode to Python buffers,
+put this line anywhere in your `.emacs` or `init.el`
+
+``` emacs-lisp
+(add-hook 'python-mode-hook 'importmagic-mode)
+```
 
 ## Usage
 The default behavior sets only one key binding: `C-c C-l`. It solves
@@ -17,13 +86,15 @@ By default, `importmagic.el` will recursively index every symbol from
 the current buffer's directory, which means you should get fairly
 accurate suggestions for imports you might need.
 
-### Use it
-Somewhere in your `init.el` or `.emacs` put these lines:
+### A fair warning
 
-``` emacs-lisp
-(require 'importmagic)
-(add-hook 'python-mode-hook 'importmagic-mode)
-```
+MELPA
+maintainers
+[suggested](https://github.com/melpa/melpa/pull/4442#issuecomment-266171502) that
+it might be counterproductive to force anyone to preset `C-c C-l` for
+(at least) a minor mode. I'll be removing the default key binding
+mid-January 2017. You're encouraged to choose your own key bindings
+for this mode. The functions provided are listed below.
 
 ### Key bindings
 Every key binding is under the `importmagic-mode-map`. If you don't
@@ -54,19 +125,13 @@ these key bindings though.
 
 #### Mode line
 
-Yes, all our mode lines are always cluttered and `importmagic.el`
-doesn't really help here: it's mode lighter is `import`. If you don't
-like its name or feel like it takes up too much space, you can
-use [this](https://github.com/myrjola/diminish.el) package to get rid
-of it. Put this line somewhere in your init file:
+If importmagic gets your mode line too cluttered,
+try [diminish](https://github.com/myrjola/diminish.el). Something like
+this would be fine:
 
 ``` emacs-lisp
 (diminish 'importmagic-mode)
 ```
-
-That should get rid of the `import` in your mode line. If you want to
-change the name in the mode line, just add a second argument as a
-string with the name you want.
 
 #### Buffers
 
@@ -91,30 +156,7 @@ Likewise, `ivy` users can get rid of it with the following:
 
 For `ido` users, no idea, Sorry!
 
-## Installation
 
-This package is not on MELPA yet. You'll have to install it manually.
-
-### Get Python dependencies
-You'll need two Python packages for this to work:
-
-``` shell
-$ pip install importmagic epc
-```
-
-### Get the files
-Download both `importmagic.el` and `importmagicserver.py`. Place them
-on a load-path of your emacs directory. For instance:
-`~/.emacs.d/site-lisp`
-
-### Place them in a path that can be loaded
-If you haven't already, tell emacs you want to load files from that
-directory:
-``` emacs-lisp
-(add-to-list 'load-path (expand-file-name (concat user-emacs-directory "site-lisp/")))
-```
-The `site-lisp` there
-should match the same string in the **Get the files** section.
 
 ## Provided functions
 
@@ -147,6 +189,17 @@ that it can import symbols that you're not currently using.
 Updates index for the current file. This can be useful if something
 changed in the current directory outside the current buffer and you
 need to import symbols from those modified files.
+
+## Virtual environments
+
+`importmagic.el` is known to work
+with [pyvenv](https://github.com/jorgenschaefer/pyvenv). Other
+packages have not been tested.
+
+Note that the above will mean that if either `importmagic` or `epc`
+are not in your virtual env, it will fail. Don't worry too much
+though. If importmagic fails, it will give you a warning, but it will
+not get in your way.
 
 ## Known issues
 
