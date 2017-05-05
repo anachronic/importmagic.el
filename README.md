@@ -116,6 +116,20 @@ Every package has its own annoyances, and this one is no
 exception. I'll try to describe here how to get rid of annoyances this
 package may produce.
 
+#### Non-error messages
+
+`importmagic.el` can be very verbose when you develop Python for
+several hours. In fact, it
+was [suggested](https://github.com/anachronic/importmagic.el/issues/5)
+that I gave the possibility to supress these messages. You can do so
+by setting the variable `importmagic-be-quiet` to `t` like so:
+
+``` emacs-lisp
+(setq importmagic-be-quiet t)
+```
+
+This, however, will **not** supress error messages.
+
 #### Key bindings
 
 I know the default key binding (`C-c C-l`) does not really help with
