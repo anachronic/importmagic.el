@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 importmagic.el server
 ---------------------
