@@ -58,9 +58,16 @@
 
 (defvar importmagic-auto-update-index t
   "Set to nil if you don't want to auto-update importmagic's symbol index after saving.")
+(defvar importmagic-be-quiet nil
+  "Set to t if you don't want to see non-error messages.")
 (defvar importmagic-server nil
   "The importmagic index server.")
 (make-variable-buffer-local 'importmagic-server)
+
+(defun importmagic--message (msg &rest args)
+  "Show the message MSG with ARGS only if importmagic is set to not be quiet."
+  (when (not importmagic-be-quiet)
+    (message msg args)))
 
 ;;;###autoload
 (define-minor-mode importmagic-mode
@@ -148,7 +155,7 @@
                                      nil
                                      options)))
         (importmagic--query-imports-for-statement-and-fix choice)
-        (message "[importmagic] Inserted %s" choice)))))
+        (importmagic--message "[importmagic] Inserted %s" choice)))))
 
 (defun importmagic-fix-symbol-at-point ()
   "Fix imports for symbol at point."
@@ -169,7 +176,7 @@
           (importmagic-fix-symbol symbol)
         (error (setq no-candidates (push symbol no-candidates)))))
     (when no-candidates
-      (message "[importmagic] Symbols with no candidates: %s" no-candidates))))
+      (importmagic--message "[importmagic] Symbols with no candidates: %s" no-candidates))))
 
 (defun importmagic--auto-update-index ()
   "Update importmagic symbol index with current directory."
@@ -186,7 +193,7 @@
       `(lambda (result)
          (if (stringp result)
              (error "[importmagic] Couldn't update index")
-           (message "[importmagic] Indexed %s" ,path))))))
+           (importmagic--message "[importmagic] Indexed %s" ,path))))))
 
 
 
