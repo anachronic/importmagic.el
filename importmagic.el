@@ -1,6 +1,6 @@
 ;;; importmagic.el --- Fix Python imports using importmagic.
 
-;; Copyright (c) 2016 Nicolás Salas V.
+;; Copyright (c) 2016-2017 Nicolás Salas V.
 ;;
 ;; Author: Nicolás Salas V. <nikosalas@gmail.com>
 ;; URL: https://github.com/anachronic/importmagic.el
