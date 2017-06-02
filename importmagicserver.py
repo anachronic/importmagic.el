@@ -7,9 +7,6 @@ Copyright (c) 2016 Nicolás Salas V.
 Licensed under GPL3. See the LICENSE file for details
 
 """
-
-
-import os
 import sys
 import threading
 from collections import deque
@@ -135,31 +132,7 @@ def add_path_to_index(*path):
     if index is None:
         return "Index not ready. Hang on a second."
 
-    index.index_path(path)
-    return 0
-
-
-@server.register_function
-def add_directory_to_index(*path):
-    path = _stringify(path)
-
-    everything = os.listdir(path)
-    files = []
-    dirs = [d for d in everything if os.path.isdir(os.path.join(path, d))]
-
-    for something in everything:
-        if os.path.isfile(os.path.join(path, something)):
-            if something.endswith('.py') and not something.startswith(
-                    '__init__'):
-                files.append(os.path.join(path, something))
-
-    for file in files:
-        index.index_path(file)
-
-    # Not sure about this one.
-    for dir in dirs:
-        index.index_path(dir)
-
+    index.build_index([path])
     return 0
 
 

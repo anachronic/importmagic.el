@@ -178,24 +178,28 @@
     (when no-candidates
       (importmagic--message "[importmagic] Symbols with no candidates: %s" no-candidates))))
 
+(defun importmagic--get-top-level ()
+  "Get the top level python package for the current file."
+  (let ((toplevel (f-dirname (f-this-file))))
+    (while (f-exists-p (f-join toplevel "__init__.py"))
+      (setq toplevel (f-dirname toplevel)))
+    toplevel))
+
 (defun importmagic--auto-update-index ()
   "Update importmagic symbol index with current directory."
   (when (and (derived-mode-p 'python-mode)
              (f-this-file))
-    (importmagic--async-add-dir
-     (f-dirname (f-this-file)))))
+    (importmagic--async-add-dir (importmagic--get-top-level))))
 
 (defun importmagic--async-add-dir (path)
   "Asynchronously add PATH to index symbol."
   (deferred:$
-    (epc:call-deferred importmagic-server 'add_directory_to_index path)
+    (epc:call-deferred importmagic-server 'add_path_to_index path)
     (deferred:nextc it
       `(lambda (result)
          (if (stringp result)
              (error "[importmagic] Couldn't update index")
            (importmagic--message "[importmagic] Indexed %s" ,path))))))
-
-
 
 (provide 'importmagic)
 ;;; importmagic.el ends here
