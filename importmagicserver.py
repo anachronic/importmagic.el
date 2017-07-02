@@ -7,6 +7,7 @@ Copyright (c) 2016 Nicolás Salas V.
 Licensed under GPL3. See the LICENSE file for details
 
 """
+import sexpdata
 import sys
 import threading
 from collections import deque
@@ -28,6 +29,18 @@ index = None
 # a regular string, which is this one.
 def _stringify(input_param):
     return ''.join(input_param)
+
+# Take an input parameter which is a list of lists and convert it to a
+# key: value dictionary, extracting the symbol value if necessary.
+def _lists_to_dict(input_param):
+    def _value(item):
+        return item.value() if isinstance(item, sexpdata.Symbol) else item
+
+    if len(input_param) != 2: # there should only be 2 lists (keys and values)
+        return {}
+    else:
+        return dict(zip(map(_value, input_param[0]),  # keys
+                        map(_value, input_param[1]))) # values
 
 
 # Construct the symbol index specified by the paths given. As the
@@ -101,11 +114,13 @@ def get_candidates_for_symbol(*symbol):
 # (assuming the call is from elisp) and the second element is the
 # chosen import statement.
 @server.register_function
-def get_import_statement(*source_and_import):
-    source = _stringify(source_and_import[0])
-    import_statement = _stringify(source_and_import[1])
+def get_import_statement(source, import_statement, style):
+    style = _lists_to_dict(style)
 
     imports = importmagic.importer.Imports(index, source)
+
+    if style:
+        imports.set_style(**style)
 
     if import_statement.startswith('import '):
         module = import_statement[7:]
