@@ -64,6 +64,12 @@
   "The importmagic index server.")
 (make-variable-buffer-local 'importmagic-server)
 
+(defvar importmagic-style-configuration
+  '((multiline max_columns)
+    (parentheses 79))
+  "Arguments to be passed to importmagic.Imports.set_style.")
+(make-variable-buffer-local 'importmagic-style-configuration)
+
 (defun importmagic--message (msg &rest args)
   "Show the message MSG with ARGS only if importmagic is set to not be quiet."
   (when (not importmagic-be-quiet)
@@ -133,7 +139,8 @@
   "Query importmagic server for STATEMENT imports in the current buffer."
   (let* ((specs (epc:call-sync importmagic-server
                                'get_import_statement
-                               `(,(importmagic--buffer-as-string) ,statement)))
+                               `(,(importmagic--buffer-as-string)
+                                 ,statement ,importmagic-style-configuration)))
          (start (car specs))
          (end (cadr specs))
          (theblock (caddr specs)))
