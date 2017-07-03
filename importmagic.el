@@ -56,22 +56,37 @@
 ;; nullprogram!
 ;; http://nullprogram.com/blog/2013/02/06/
 
-(defvar importmagic-auto-update-index t
-  "Set to nil if you don't want to auto-update importmagic's symbol index after saving.")
-(defvar importmagic-be-quiet nil
-  "Set to t if you don't want to see non-error messages.")
-(defvar importmagic-server nil
-  "The importmagic index server.")
-(make-variable-buffer-local 'importmagic-server)
+(defgroup importmagic nil
+  "Easily insert unimported symbols in Python buffers."
+  :group 'tools
+  :group 'convenience
+  :group 'programming)
 
-(defvar importmagic-style-configuration-alist
+(defcustom importmagic-auto-update-index t
+  "Set to nil if you don't want to auto-update importmagic's symbol index after saving."
+  :group 'importmagic
+  :type 'boolean)
+
+(defcustom importmagic-be-quiet nil
+  "Set to t if you don't want to see non-error messages."
+  :group 'importmagic
+  :type 'boolean)
+
+(defcustom importmagic-style-configuration-alist
   '((multiline . parentheses)
     (max_columns . 79))
   "Arguments to be passed to importmagic.Imports.set_style.
 
 Defaults to importmagic defaults, the options available can be
-seen on https://github.com/alecthomas/importmagic.")
+seen on https://github.com/alecthomas/importmagic."
+  :group 'importmagic
+  :type '(alist :key-type symbol))
+
 (make-variable-buffer-local 'importmagic-style-configuration)
+
+(defvar importmagic-server nil
+  "The importmagic index server.")
+(make-variable-buffer-local 'importmagic-server)
 
 (defun importmagic--message (msg &rest args)
   "Show the message MSG with ARGS only if importmagic is set to not be quiet."
