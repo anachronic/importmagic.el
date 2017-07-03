@@ -3,7 +3,7 @@
 importmagic.el server
 ---------------------
 
-Copyright (c) 2016 Nicolás Salas V.
+Copyright (c) 2017 Nicolás Salas V.
 Licensed under GPL3. See the LICENSE file for details
 
 """

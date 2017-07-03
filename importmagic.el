@@ -64,10 +64,13 @@
   "The importmagic index server.")
 (make-variable-buffer-local 'importmagic-server)
 
-(defvar importmagic-style-configuration
-  '((multiline max_columns)
-    (parentheses 79))
-  "Arguments to be passed to importmagic.Imports.set_style.")
+(defvar importmagic-style-configuration-alist
+  '((multiline . parentheses)
+    (max_columns . 79))
+  "Arguments to be passed to importmagic.Imports.set_style.
+
+Defaults to importmagic defaults, the options available can be
+seen on https://github.com/alecthomas/importmagic.")
 (make-variable-buffer-local 'importmagic-style-configuration)
 
 (defun importmagic--message (msg &rest args)
@@ -134,13 +137,21 @@
         (delete-region start-pos end-pos)
         (insert import-block)))))
 
+(defun importmagic--style-alist-to-zippable-lists (style-alist)
+  "Convert STYLE-ALIST to two zippable lists."
+  (if (not style-alist)
+      nil
+    (append (list (mapcar 'car style-alist)
+                  (mapcar 'cdr style-alist)))))
 
 (defun importmagic--query-imports-for-statement-and-fix (statement)
   "Query importmagic server for STATEMENT imports in the current buffer."
   (let* ((specs (epc:call-sync importmagic-server
                                'get_import_statement
                                `(,(importmagic--buffer-as-string)
-                                 ,statement ,importmagic-style-configuration)))
+                                 ,statement
+                                 ,(importmagic--style-alist-to-zippable-lists
+                                   importmagic-style-configuration-alist))))
          (start (car specs))
          (end (cadr specs))
          (theblock (caddr specs)))
