@@ -3,24 +3,25 @@
 
 `importmagic.el` is an Emacs package inspired on
 @alecthomas's [importmagic](https://github.com/alecthomas/importmagic)
-library. It resolves unimported symbols in your Python buffers.
+library and PyCharm's ability to suggest imports for unresolved
+symbols.
 
 ![Example of Import Magic at work](importmagic.gif)
 
 ## Installation
 
-There are a few steps to get this working, we'll go through them all
+To install this package, MELPA is the way to go, but you also need
+some extra dependencies.
 
 ### Python dependencies
 
 This package relies heavily on importmagic and EPC. You can get them
-from PyPi:
+from pip. These packages should be installed in the same environment
+you're working on.
 
 ``` shell
 $ pip install importmagic epc
 ```
-
-You can either install them on each virtualenv you work or globally.
 
 ### Installing the Emacs package
 
@@ -28,12 +29,12 @@ It is recommended that you install this package
 from [MELPA](https://melpa.org/). There's still a way if you don't use
 it though.
 
-#### The MELPA way
+#### From MELPA
 
 A simple way would be to just:
 
 ``` emacs-lisp
-M-x package-install importmagic
+M-x package-install RET importmagic RET
 ```
 
 You can also
@@ -77,24 +78,15 @@ put this line anywhere in your `.emacs` or `init.el`
 ```
 
 ## Usage
-The default behavior sets only one key binding: `C-c C-l`. It solves
-imports for every unresolved symbol in the buffer, prompting for one
-import at a time. If there are no imports found for a given symbol,
-importmagic will let you know at the end of the process.
+The default behavior sets only one key binding: <kbd>C-c C-l</kbd>. It
+solves imports for every unresolved symbol in the buffer, prompting
+for one import at a time. If there are no imports found for a given
+symbol, importmagic will let you know at the end of the process.
 
 By default, `importmagic.el` will recursively index every symbol from
 the current buffer's directory, which means you should get fairly
 accurate suggestions for imports you might need.
 
-### A fair warning
-
-MELPA
-maintainers
-[suggested](https://github.com/melpa/melpa/pull/4442#issuecomment-266171502) that
-it might be counterproductive to force anyone to preset `C-c C-l` for
-(at least) a minor mode. I'll be removing the default key binding
-mid-January 2017. You're encouraged to choose your own key bindings
-for this mode. The functions provided are listed below.
 
 ### Key bindings
 Every key binding is under the `importmagic-mode-map`. If you don't
@@ -109,6 +101,49 @@ Note that the example above will override a defined key binding in the
 `python-mode-map`. You can do that as long as you feel the need to (as
 I did). This package is not really intended to interfer with the
 default bindings, though.
+
+### Imports style
+
+Importmagic
+supports
+[configuration](https://github.com/alecthomas/importmagic#configuration) on
+the styles it has. As of July 2, 2017, so does `importmagic.el`.
+
+When an import statement gets too long, you have the choice to group
+it using either parentheses or backslashes. Both of these options
+(maximum length of line and import group styles) can be set with
+the variable `importmagic-configuration-style-alist`, which is an
+alist (duh) of your preferences.
+
+The default value is
+
+``` emacs-lisp
+'((multiline . parentheses)
+  (max_columns . 79))
+```
+
+### Customizing
+
+`M-x customize-group RET importmagic RET`.
+
+### A fair warning
+
+The default key binding that importmagic provides is <kbd>C-c
+C-l</kbd>, but both MELPA
+maintainers
+[suggested](https://github.com/melpa/melpa/pull/4442#issuecomment-266171502) that
+it might be counterproductive to force anyone to use this keybinding
+as it appears to be reserved for major modes. As far as I know, the
+keybinding is **not** used with `python.el`, which is the Python mode
+bundled with Emacs.
+
+In case this keybinding bothers you, rebind it to anything you like
+and set it to nil in `importmagic-mode-map` like so:
+
+``` emacs-lisp
+(define-key importmagic-mode-map (kbd "C-c C-f") nil)
+```
+
 
 ### Annoyances
 
@@ -129,13 +164,6 @@ by setting the variable `importmagic-be-quiet` to `t` like so:
 ```
 
 This, however, will **not** supress error messages.
-
-#### Key bindings
-
-I know the default key binding (`C-c C-l`) does not really help with
-mnemonics, but I didn't really want to take up any space from the
-default `python.el` key bindings. It is explained above how to change
-these key bindings though.
 
 #### Mode line
 
@@ -207,7 +235,9 @@ need to import symbols from those modified files.
 ## Virtual environments
 
 `importmagic.el` is known to work
-with [pyvenv](https://github.com/jorgenschaefer/pyvenv). Other
+with [pyvenv](https://github.com/jorgenschaefer/pyvenv)
+and
+[virtualenvwrapper.el](https://github.com/porterjamesj/virtualenvwrapper.el). Other
 packages have not been tested.
 
 Note that the above will mean that if either `importmagic` or `epc`
