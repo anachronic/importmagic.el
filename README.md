@@ -252,6 +252,12 @@ affect importmagic, but it also affects
 Jedi. See
 [this issue](https://github.com/davidhalter/jedi/issues/531).
 
+If you are using ipython as default python-shell-interpreter use
+``` shell
+(setq-default python-shell-interpreter-args '("--no-banner"))
+```
+Because epc requires the port number should be in the first three lines
+
 ## Contributing
 Any kind of contribution is absolutely welcome.
 
