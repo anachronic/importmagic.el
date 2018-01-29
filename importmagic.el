@@ -103,14 +103,17 @@ seen on https://github.com/alecthomas/importmagic."
             keymap)
   (when (not (derived-mode-p 'python-mode))
     (error "Importmagic only works with Python buffers"))
-  (let ((importmagic-path (f-slash (f-dirname (locate-library "importmagic")))))
+  (let ((importmagic-path (f-slash (f-dirname (locate-library "importmagic"))))
+        (py-interpreter (if (boundp 'python-shell-interpreter) python-shell-interpreter "python"))
+        (py-args (if (boundp 'python-shell-interpreter-args) python-shell-interpreter-args '())))
     (if importmagic-mode
         (progn
           (condition-case nil
               (progn
                 (setq importmagic-server
-                      (epc:start-epc "python"
-                                     `(,(f-join importmagic-path "importmagicserver.py"))))
+                      (epc:start-epc py-interpreter
+                                     append(py-args
+                                            `(,(f-join importmagic-path "importmagicserver.py")))))
                 (add-hook 'kill-buffer-hook 'importmagic--teardown-epc)
                 (add-hook 'before-revert-hook 'importmagic--teardown-epc)
                 (importmagic--auto-update-index))
