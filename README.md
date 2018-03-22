@@ -144,6 +144,11 @@ and set it to nil in `importmagic-mode-map` like so:
 (define-key importmagic-mode-map (kbd "C-c C-f") nil)
 ```
 
+If you are using ipython as default python-shell-interpreter use
+``` emacs-lisp
+(setq-default python-shell-interpreter-args '("--no-banner"))
+```
+Because epc requires the port number should be in the first three lines
 
 ### Annoyances
 
