@@ -82,6 +82,14 @@ seen on https://github.com/alecthomas/importmagic."
   :group 'importmagic
   :type '(alist :key-type symbol))
 
+(defcustom importmagic-python-interpreter
+  (if (boundp 'python-shell-interpreter)
+      python-shell-interpreter
+    "python")
+  "Path to python interpreter used by importmagic."
+  :group 'importmagic
+  :type '(string))
+
 (make-variable-buffer-local 'importmagic-style-configuration)
 
 (defvar importmagic-server nil
