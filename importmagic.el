@@ -101,6 +101,16 @@ seen on https://github.com/alecthomas/importmagic."
   (when (not importmagic-be-quiet)
     (message msg args)))
 
+(defun importmagic--server-path ()
+  "Get the server path for importmagic."
+  (f-join (f-slash (f-dirname (locate-library "importmagic"))) "importmagicserver.py"))
+
+(defun importmagic--epc-args ()
+  "Get the arguments for the python interpreter when calling the EPC python process."
+  (let* ((split-interpreter (split-string importmagic-python-interpreter))
+         (interpreter-args (cdr split-interpreter)))
+    (append interpreter-args (list (importmagic--server-path)))))
+
 ;;;###autoload
 (define-minor-mode importmagic-mode
   "A mode that lets you autoimport unresolved Python symbols."
@@ -111,22 +121,21 @@ seen on https://github.com/alecthomas/importmagic."
             keymap)
   (when (not (derived-mode-p 'python-mode))
     (error "Importmagic only works with Python buffers"))
-  (let ((importmagic-path (f-slash (f-dirname (locate-library "importmagic")))))
-    (if importmagic-mode
-        (progn
-          (condition-case nil
-              (progn
-                (setq importmagic-server
-                      (epc:start-epc "python"
-                                     `(,(f-join importmagic-path "importmagicserver.py"))))
-                (add-hook 'kill-buffer-hook 'importmagic--teardown-epc)
-                (add-hook 'before-revert-hook 'importmagic--teardown-epc)
-                (importmagic--auto-update-index))
-            (error (progn
-                     (message "Importmagic and/or epc not found. importmagic.el will not be working.")
-                     (importmagic-mode -1) ;; This should take it to the stop server section.
-                     ))))
-      (importmagic--stop-server))))
+  (if importmagic-mode
+      (progn
+        (condition-case nil
+            (progn
+              (setq importmagic-server
+                    (epc:start-epc "python"
+                                   (importmagic--epc-args)))
+              (add-hook 'kill-buffer-hook 'importmagic--teardown-epc)
+              (add-hook 'before-revert-hook 'importmagic--teardown-epc)
+              (importmagic--auto-update-index))
+          (error (progn
+                   (message "Importmagic and/or epc not found. importmagic.el will not be working.")
+                   (importmagic-mode -1) ;; This should take it to the stop server section.
+                   ))))
+    (importmagic--stop-server)))
 
 (defun importmagic--teardown-epc ()
   "Stop the EPC server for the current buffer."
