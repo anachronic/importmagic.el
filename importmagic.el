@@ -111,6 +111,10 @@ seen on https://github.com/alecthomas/importmagic."
          (interpreter-args (cdr split-interpreter)))
     (append interpreter-args (list (importmagic--server-path)))))
 
+(defun importmagic--epc-python-interpreter ()
+  "Get the program to run for the EPC server."
+  (car (split-string importmagic-python-interpreter)))
+
 ;;;###autoload
 (define-minor-mode importmagic-mode
   "A mode that lets you autoimport unresolved Python symbols."
@@ -126,7 +130,7 @@ seen on https://github.com/alecthomas/importmagic."
         (condition-case nil
             (progn
               (setq importmagic-server
-                    (epc:start-epc "python"
+                    (epc:start-epc (importmagic--epc-python-interpreter)
                                    (importmagic--epc-args)))
               (add-hook 'kill-buffer-hook 'importmagic--teardown-epc)
               (add-hook 'before-revert-hook 'importmagic--teardown-epc)
