@@ -8,10 +8,6 @@
       (importmagic-mode))))
 
 (Given "^buffer is in \\(.+\\)$"
-  (lambda (mode)
-    (ignore-errors
-      (importmagic-mode))))
-(Given "^buffer is in \\(.+\\)$"
   "Turns on some mode."
   (lambda (mode)
     (let ((v (vconcat [?\C-u ?\M-x] (string-to-vector mode))))
@@ -22,6 +18,23 @@
   (lambda ()
     (let ((message "Expected `importmagic-server' to be non-nil, but it was nil."))
       (cl-assert importmagic-server nil message))))
+
+(Then "^buffer \"\\([^\"]+\\)\" should have importmagic-server up$"
+  (lambda (buffer)
+    (with-current-buffer (get-buffer-create buffer)
+      (let ((message "Expected `importmagic-server' to be non-nil, but it was nil."))
+        (cl-assert importmagic-server nil message)))))
+
+(Then "^importmagic-server should differ between buffers \"\\([^\"]+\\)\" and \"\\([^\"]+\\)\"$"
+  (lambda (buffer1 buffer2)
+    (let ((server-buffer1 (with-current-buffer
+                           (get-buffer-create buffer1)
+                           (epc:uid)))
+          (server-buffer2 (with-current-buffer
+                           (get-buffer-create buffer2)
+                           (epc:uid))))
+      (let ((message "Expected epc uid to be different between buffers, but they were equal"))
+        (cl-assert (not (= server-buffer1 server-buffer2)) nil message)))))
 
 (Then "^importmagic-server should not be up$"
   "Asserts that importmagic-server is nil"
