@@ -22,39 +22,37 @@
     (importmagic-mode)
     (should importmagic-server)))
 
-;; With ipython as interpreter
-(ert-deftest importmagic-use-vanilla-ipython ()
-  (with-temp-buffer
-    (setq-default importmagic-python-interpreter "ipython")
-    (python-mode)
-    (importmagic-mode)
-    (should importmagic-server)))
+;; ;; With ipython as interpreter
+;; (ert-deftest importmagic-use-vanilla-ipython ()
+;;   (with-temp-buffer
+;;     (setq-default importmagic-python-interpreter "ipython")
+;;     (python-mode)
+;;     (importmagic-mode)
+;;     (should importmagic-server)))
 
-;; With ipython with one argument
-(ert-deftest importmagic-use-ipython-with-one-arg ()
-  (with-temp-buffer
-    (setq-default importmagic-python-interpreter "ipython --no-banner")
-    (python-mode)
-    (importmagic-mode)
-    (should importmagic-server)))
+;; ;; With ipython with one argument
+;; (ert-deftest importmagic-use-ipython-with-one-arg ()
+;;   (with-temp-buffer
+;;     (setq-default importmagic-python-interpreter "ipython --no-banner")
+;;     (python-mode)
+;;     (importmagic-mode)
+;;     (should importmagic-server)))
 
-;; With ipython with two arguments
-(ert-deftest importmagic-use-ipython-with-two-args ()
-  (with-temp-buffer
-    (setq-default importmagic-python-interpreter "ipython --no-banner --quick")
-    (python-mode)
-    (importmagic-mode)
-    (should importmagic-server)))
+;; ;; With ipython with two arguments
+;; (ert-deftest importmagic-use-ipython-with-two-args ()
+;;   (with-temp-buffer
+;;     (setq-default importmagic-python-interpreter "ipython --no-banner --quick")
+;;     (python-mode)
+;;     (importmagic-mode)
+;;     (should importmagic-server)))
 
-;; With ipython with three arguments
-(ert-deftest importmagic-use-ipython-with-three-args ()
-  (with-temp-buffer
-    (setq-default importmagic-python-interpreter "ipython --no-banner --quick --quiet")
-    (python-mode)
-    (importmagic-mode)
-    (should importmagic-server)))
-
-
+;; ;; With ipython with three arguments
+;; (ert-deftest importmagic-use-ipython-with-three-args ()
+;;   (with-temp-buffer
+;;     (setq-default importmagic-python-interpreter "ipython --no-banner --quick --quiet")
+;;     (python-mode)
+;;     (importmagic-mode)
+;;     (should importmagic-server)))
 
 ;; Let's define a bad buffer
 (defconst importmagic-bad-buffer-test
