@@ -11,7 +11,8 @@
 (Given "^the buffer has correctly started importmagic-mode$"
        (lambda ()
          (python-mode)
-         (importmagic-mode)))
+         (importmagic-mode)
+         (sleep-for 3)))
 
 (When "^I try to turn on importmagic-mode$"
       (lambda ()
@@ -50,6 +51,7 @@
       "Asserts that importmagic-server is not nil"
       (lambda ()
         (let ((message "Expected `importmagic-server' to be non-nil, but it was nil."))
+          (sleep-for 3)
           (cl-assert importmagic-server nil message))))
 
 (Then "^buffer \"\\([^\"]+\\)\" should have importmagic-server up$"
@@ -73,6 +75,7 @@
       "Asserts that importmagic-server is nil"
       (lambda ()
         (let ((message "Expected `importmagic-server' to be nil, but it was not nil."))
+          (sleep-for 3)
           (cl-assert (not importmagic-server) nil message))))
 
 (Then "^an unresolved symbol should be \"\\([^\"]+\\)\"$"
