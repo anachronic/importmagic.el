@@ -30,7 +30,7 @@ install:
   - pip install epc
 
 script:
-  - cask exec ert-runner
+  - cask exec ecukes
 
 notifications:
   email:
