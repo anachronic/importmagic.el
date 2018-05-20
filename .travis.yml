@@ -4,6 +4,7 @@ python:
   - 2.7
   - 3.4
   - 3.5
+  - 3.6
 
 before_install:
   - git clone https://github.com/rejeep/evm.git $HOME/.evm
@@ -18,6 +19,10 @@ before_install:
 env:
   - EVM_EMACS=emacs-24.4-travis
   - EVM_EMACS=emacs-24.5-travis
+  - EVM_EMACS=emacs-25.1-travis
+  - EVM_EMACS=emacs-25.2-travis
+  - EVM_EMACS=emacs-25.3-travis
+  - EVM_EMACS=emacs-26-pretest-travis
   - EVM_EMACS=emacs-git-snapshot-travis
 
 install:
