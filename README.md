@@ -8,6 +8,16 @@ symbols.
 
 ![Example of Import Magic at work](importmagic.gif)
 
+## WARNING!
+
+**PLEASE** use wrappers for virtual environments as `importmagic.el`
+does not care at all about the environment on which it is
+run. `importmagic.el` is known to work with
+[virtualenvwrapper.el](https://github.com/porterjamesj/virtualenvwrapper.el)
+and [pyvenv](https://github.com/jorgenschaefer/pyvenv).
+
+If you still don't want to do that, check out the Usage section.
+
 ## Installation
 
 To install this package, MELPA is the way to go, but you also need
@@ -126,24 +136,17 @@ The default value is
 
 `M-x customize-group RET importmagic RET`.
 
-### A fair warning
+### Python Interpreter
 
-The default key binding that importmagic provides is <kbd>C-c
-C-l</kbd>, but both MELPA
-maintainers
-[suggested](https://github.com/melpa/melpa/pull/4442#issuecomment-266171502) that
-it might be counterproductive to force anyone to use this keybinding
-as it appears to be reserved for major modes. As far as I know, the
-keybinding is **not** used with `python.el`, which is the Python mode
-bundled with Emacs.
-
-In case this keybinding bothers you, rebind it to anything you like
-and set it to nil in `importmagic-mode-map` like so:
+As we talked about in the first section of this document,
+`importmagic.el` won't care about the environment an will thus use the
+default system python interpreter. If you do not want to do this and
+want to use a different python interpreter you can set
+`importmagic-python-interpreter` like so:
 
 ``` emacs-lisp
-(define-key importmagic-mode-map (kbd "C-c C-f") nil)
+(setq importmagic-python-interpreter "/path/to/my/virtualenv/bin/python")
 ```
-
 
 ### Annoyances
 
