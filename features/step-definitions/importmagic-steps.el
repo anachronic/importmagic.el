@@ -73,6 +73,10 @@
       (setq message (s-replace "\\\"" "\"" message))
       (cl-assert (not (-contains? (-map 's-trim ecukes-message-log) message)) nil msg message))))
 
+(When "^I turn off importmagic-mode$"
+      (lambda ()
+        (ignore-errors (importmagic-mode -1))))
+
 ;; Ideally we should assert no error here, but I didn't find a way to
 ;; do that
 (Then "^nothing should happen$"

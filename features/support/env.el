@@ -22,6 +22,7 @@
 (Before
  (setq importmagic-python-interpreter
        (eval (car (get 'importmagic-python-interpreter 'standard-value))))
+ (setq ecukes-message-log nil)
  (switch-to-buffer
   (get-buffer-create (concat "*" (number-to-string (random)) "*")))
  ;; (importmagic-mode -1)

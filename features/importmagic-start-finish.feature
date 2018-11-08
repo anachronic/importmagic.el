@@ -17,14 +17,14 @@ Feature: Importmagic starts and finishes correctly
 
   Scenario: Try to deactivate importmagic on a non-python buffer when it's not active
     Given buffer is in c-mode
-    When I turn off minor mode importmagic-mode
+    When I turn off importmagic-mode
     Then nothing should happen
     And the buffer should be empty
     And I should not see message "Importmagic and/or epc not found. importmagic.el will not be working."
 
   Scenario: Try to deactivate importmagic on a python buffer when it's not active
     Given buffer is in python-mode
-    When I turn off minor mode importmagic-mode
+    When I turn off importmagic-mode
     Then nothing should happen
     And the buffer should be empty
     And I should not see message "Importmagic and/or epc not found. importmagic.el will not be working."
