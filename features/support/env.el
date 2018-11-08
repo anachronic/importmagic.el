@@ -20,8 +20,11 @@
 (Setup)
 
 (Before
+ (setq importmagic-python-interpreter
+       (eval (car (get 'importmagic-python-interpreter 'standard-value))))
  (switch-to-buffer
-  (get-buffer-create "*importmagic*"))
+  (get-buffer-create (concat "*" (number-to-string (random)) "*")))
+ ;; (importmagic-mode -1)
  (erase-buffer)
  (fundamental-mode)
  (cua-mode 0)

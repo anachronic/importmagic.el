@@ -2,13 +2,7 @@ Feature: Importmagic starts and finishes correctly
 
   Scenario: Activate importmagic-mode in a python buffer
     When I turn on python-mode
-    And I turn on importmagic-mode
-    Then importmagic-server should be up
-
-  Scenario: Using vanilla python as importmagic python interpreter
-    Given I set importmagic-python-interpreter to "python"
-    When I turn on python-mode
-    And I turn on importmagic-mode
+    And I try to turn on importmagic-mode
     Then importmagic-server should be up
 
   Scenario: Try to activate importmagic in fundamental-mode
@@ -20,6 +14,20 @@ Feature: Importmagic starts and finishes correctly
     Given buffer is in c-mode
     When I try to turn on importmagic-mode
     Then importmagic-server should not be up
+
+  Scenario: Try to deactivate importmagic on a non-python buffer when it's not active
+    Given buffer is in c-mode
+    When I turn off minor mode importmagic-mode
+    Then nothing should happen
+    And the buffer should be empty
+    And I should not see message "Importmagic and/or epc not found. importmagic.el will not be working."
+
+  Scenario: Try to deactivate importmagic on a python buffer when it's not active
+    Given buffer is in python-mode
+    When I turn off minor mode importmagic-mode
+    Then nothing should happen
+    And the buffer should be empty
+    And I should not see message "Importmagic and/or epc not found. importmagic.el will not be working."
 
   Scenario: Check importmagic-server with ONLY python mode
     When I turn on python-mode

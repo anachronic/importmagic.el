@@ -11,47 +11,17 @@
 (Given "^the buffer has correctly started importmagic-mode$"
        (lambda ()
          (python-mode)
-         (importmagic-mode)
-         (sleep-for 3)))
+         (importmagic-mode)))
 
 (When "^I try to turn on importmagic-mode$"
       (lambda ()
         (ignore-errors
           (importmagic-mode))))
 
-(When "^I execute importmagix-fix-imports accepting the first candidate always$"
-      (lambda ()
-        (cl-letf (((symbol-function 'completing-read)
-                   (lambda (prompt vals pred match initial history default)
-                     (cond
-                      ((string= "Querying for os.path.join: " prompt) "import os.path")
-                      ((string= "Querying for os.getcwd: " prompt) "import os")
-                      ((string= "Querying for datetime.timedelta: " prompt) "import datetime")
-                      ((string= "Querying for datetime.now: " prompt) "import datetime")
-                      (t nil)          ; Fail otherwise
-                      ))))
-          (importmagic-fix-imports))))
-
-(When "^I execute importmagic-fix-symbol-at-point accepting the first candidate$"
-      (lambda ()
-        (cl-letf (((symbol-function 'completing-read)
-                   (lambda (prompt collection &optional predicate require-match initial history default inherit-input-method)
-                     "import os")))
-          (importmagic-fix-symbol-at-point))))
-
-(When "^I execute importmagic-fix-symbol with argument \"\\([^\"]+\\)\" accepting the first candidate$"
-      (lambda (symbol)
-        (cl-letf (((symbol-function 'completing-read)
-                   (lambda (prompt collection &optional predicate require-match initial history default inherit-input-method)
-                     "import os")))
-          (importmagic-fix-symbol symbol))))
-
-
 (Then "^importmagic-server should be up$"
       "Asserts that importmagic-server is not nil"
       (lambda ()
         (let ((message "Expected `importmagic-server' to be non-nil, but it was nil."))
-          (sleep-for 3)
           (cl-assert importmagic-server nil message))))
 
 (Then "^buffer \"\\([^\"]+\\)\" should have importmagic-server up$"
@@ -75,7 +45,6 @@
       "Asserts that importmagic-server is nil"
       (lambda ()
         (let ((message "Expected `importmagic-server' to be nil, but it was not nil."))
-          (sleep-for 3)
           (cl-assert (not importmagic-server) nil message))))
 
 (Then "^an unresolved symbol should be \"\\([^\"]+\\)\"$"
@@ -83,3 +52,28 @@
     (let ((unresolved (importmagic--get-unresolved-symbols))
           (message (concat "Expected " symbol " to be unresolved but didn't get it")))
       (cl-assert (member symbol unresolved) nil message))))
+
+(When "^I call \"\\(.+\\)\" and accept \"\\([0-9]+\\)\" times?$"
+  (lambda (function-name times)
+    (execute-kbd-macro
+     (kbd (let ((keys (concat "M-x " function-name " RET")))
+            (dotimes (_ (string-to-number times))
+              (setq keys (concat keys " RET")))
+            keys)))))
+
+(When "^I query for symbol \"\\(.+\\)\" accepting the first candidate$"
+  (lambda (symbol)
+    (execute-kbd-macro
+     (kbd (concat "M-x importmagic-fix-symbol RET " symbol " RET")))))
+
+(Then "^I should not see message \"\\(.+\\)\"$"
+  "Asserts that MESSAGE has not been printed."
+  (lambda (message)
+    (let ((msg "Expected '%s' to not be included in the list of printed messages, but it was."))
+      (setq message (s-replace "\\\"" "\"" message))
+      (cl-assert (not (-contains? (-map 's-trim ecukes-message-log) message)) nil msg message))))
+
+;; Ideally we should assert no error here, but I didn't find a way to
+;; do that
+(Then "^nothing should happen$"
+  (lambda () t))

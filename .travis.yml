@@ -28,6 +28,7 @@ env:
 install:
   - pip install importmagic
   - pip install epc
+  - pip install ipython
 
 script:
   - cask exec ecukes

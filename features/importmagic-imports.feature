@@ -8,7 +8,7 @@ Feature: Importmagic fixes symbols in buffers
     today = datetime.now()
     future = datetime.timedelta(hours=1)
     """
-    And I execute importmagix-fix-imports accepting the first candidate always
+    And I call "importmagic-fix-imports" and accept "4" times
     Then I should see "import os.path"
     And I should see "import os"
     And I should see "import datetime"
@@ -30,7 +30,7 @@ Feature: Importmagic fixes symbols in buffers
     Given the buffer has correctly started importmagic-mode
     When I insert "os.path"
     And I go to beginning of buffer
-    And I execute importmagic-fix-symbol-at-point accepting the first candidate
+    And I call "importmagic-fix-symbol-at-point" and accept "1" time
     Then I should see "import os"
     And I should see "os.path"
 
@@ -38,6 +38,6 @@ Feature: Importmagic fixes symbols in buffers
     Given the buffer has correctly started importmagic-mode
     When I insert "os.path"
     And I go to beginning of buffer
-    And I execute importmagic-fix-symbol with argument "os" accepting the first candidate
+    And I query for symbol "os" accepting the first candidate
     Then I should see "import os"
     And I should see "os.path"
