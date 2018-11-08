@@ -124,7 +124,7 @@ seen on https://github.com/alecthomas/importmagic."
             (define-key keymap (kbd "C-c C-l") 'importmagic-fix-imports)
             keymap)
   (when (not (derived-mode-p 'python-mode))
-    (error "Importmagic only works with Python buffers"))
+    (importmagic--message "Importmagic only works with Python buffers"))
   (if importmagic-mode
       (progn
         (condition-case nil
