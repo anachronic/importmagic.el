@@ -1,5 +1,8 @@
 # importmagic.el [![Build Status](https://travis-ci.org/anachronic/importmagic.el.svg?branch=master)](https://travis-ci.org/anachronic/importmagic.el) [![MELPA](https://melpa.org/packages/importmagic-badge.svg)](https://melpa.org/#/importmagic)
 
+> This repository is going to be archived on Jan 31, 2020 because I have not been
+> using Emacs for a long time now. If you wish to maintain this project. Please
+> leave a comment [here](https://github.com/anachronic/importmagic.el/issues/19)
 
 `importmagic.el` is an Emacs package inspired on
 @alecthomas's [importmagic](https://github.com/alecthomas/importmagic)
@@ -29,7 +32,7 @@ This package relies heavily on importmagic and EPC. You can get them
 from pip. These packages should be installed in the same environment
 you're working on.
 
-``` shell
+```shell
 $ pip install importmagic epc
 ```
 
@@ -43,14 +46,14 @@ it though.
 
 A simple way would be to just:
 
-``` emacs-lisp
+```emacs-lisp
 M-x package-install RET importmagic RET
 ```
 
 You can also
 try [use-package](https://github.com/jwiegley/use-package):
 
-``` emacs-lisp
+```emacs-lisp
 (use-package importmagic
     :ensure t
     :config
@@ -62,7 +65,7 @@ with importmagic.
 
 Whichever way you choose remember to add the hook to python mode:
 
-``` emacs-lisp
+```emacs-lisp
 (add-hook 'python-mode-hook 'importmagic-mode)
 ```
 
@@ -75,7 +78,7 @@ on a load-path of your emacs directory. For instance:
 If you haven't already, tell emacs you want to load files from that
 directory:
 
-``` emacs-lisp
+```emacs-lisp
 (add-to-list 'load-path (expand-file-name (concat user-emacs-directory "site-lisp/")))
 ```
 
@@ -83,11 +86,12 @@ Of course, you can choose to change the name of the `site-lisp`
 portion of the code. Don't forget to add the mode to Python buffers,
 put this line anywhere in your `.emacs` or `init.el`
 
-``` emacs-lisp
+```emacs-lisp
 (add-hook 'python-mode-hook 'importmagic-mode)
 ```
 
 ## Usage
+
 The default behavior sets only one key binding: <kbd>C-c C-l</kbd>. It
 solves imports for every unresolved symbol in the buffer, prompting
 for one import at a time. If there are no imports found for a given
@@ -97,13 +101,13 @@ By default, `importmagic.el` will recursively index every symbol from
 the current buffer's directory, which means you should get fairly
 accurate suggestions for imports you might need.
 
-
 ### Key bindings
+
 Every key binding is under the `importmagic-mode-map`. If you don't
 like the `C-c C-l` keybinding or want to add extra keys to your
 configuration, just set them like so:
 
-``` emacs-lisp
+```emacs-lisp
 (define-key importmagic-mode-map (kbd "C-c C-f") 'importmagic-fix-symbol-at-point)
 ```
 
@@ -127,7 +131,7 @@ alist (duh) of your preferences.
 
 The default value is
 
-``` emacs-lisp
+```emacs-lisp
 '((multiline . parentheses)
   (max_columns . 79))
 ```
@@ -144,7 +148,7 @@ default system python interpreter. If you do not want to do this and
 want to use a different python interpreter you can set
 `importmagic-python-interpreter` like so:
 
-``` emacs-lisp
+```emacs-lisp
 (setq importmagic-python-interpreter "/path/to/my/virtualenv/bin/python")
 ```
 
@@ -162,7 +166,7 @@ was [suggested](https://github.com/anachronic/importmagic.el/issues/5)
 that I gave the possibility to supress these messages. You can do so
 by setting the variable `importmagic-be-quiet` to `t` like so:
 
-``` emacs-lisp
+```emacs-lisp
 (setq importmagic-be-quiet t)
 ```
 
@@ -174,7 +178,7 @@ If importmagic gets your mode line too cluttered,
 try [diminish](https://github.com/myrjola/diminish.el). Something like
 this would be fine:
 
-``` emacs-lisp
+```emacs-lisp
 (diminish 'importmagic-mode)
 ```
 
@@ -189,19 +193,17 @@ that's ok (at least for me), It can be troublesome for some people.
 `Helm` users can get rid of these buffers (as in not see them)
 evaluating the following expression:
 
-``` emacs-lisp
+```emacs-lisp
 (add-to-list 'helm-boring-buffer-regexp-list "\\*epc con")
 ```
 
 Likewise, `ivy` users can get rid of it with the following:
 
-``` emacs-lisp
+```emacs-lisp
 (add-to-list 'ivy-ignore-buffers "\\*epc con")
 ```
 
 For `ido` users, no idea, Sorry!
-
-
 
 ## Provided functions
 
@@ -209,28 +211,33 @@ A list of every provided function, in case you either want to bind
 them to a key or just want to `M-x` for it.
 
 ### `importmagic-mode`
+
 Turn on/off importmagic-mode in the current buffer. As usual, a
 positive argument sets it on, negative argument sets it off. With just
 `M-x`, it will toggle the mode.
 
 ### `importmagic-fix-imports`
+
 Query for **every** unimported symbol in the current buffer. This can
 be useful if you've written a lot of code and didn't bother to import
 anything.
 
 ### `importmagic-fix-symbol-at-point`
+
 Query for imports for the symbol at point. Note that this will query
 the database even if the symbol at point is already
 imported. [Flycheck](http://www.flycheck.org/) can be helpful for this
 one.
 
 ### `importmagic-fix-symbol`
+
 Prompts for a symbol to import. This function is the base for the two
 above since it doesn't make any assumption on what you want to
 import. It will find suitable candidates for the given symbol. Note
 that it can import symbols that you're not currently using.
 
 ### `importmagic-update-index`
+
 Updates index for the current file. This can be useful if something
 changed in the current directory outside the current buffer and you
 need to import symbols from those modified files.
@@ -256,12 +263,13 @@ Jedi. See
 [this issue](https://github.com/davidhalter/jedi/issues/531).
 
 ## Contributing
+
 Any kind of contribution is absolutely welcome.
 
 If you haven't already,
 install [Cask](https://github.com/cask/cask). Run the tests with:
 
-``` shell
+```shell
 $ cask exec ert-runner
 ```
 
