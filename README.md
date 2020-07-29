@@ -1,9 +1,5 @@
 # importmagic.el [![Build Status](https://travis-ci.org/anachronic/importmagic.el.svg?branch=master)](https://travis-ci.org/anachronic/importmagic.el) [![MELPA](https://melpa.org/packages/importmagic-badge.svg)](https://melpa.org/#/importmagic)
 
-> This repository is going to be archived on Jan 31, 2020 because I have not been
-> using Emacs for a long time now. If you wish to maintain this project. Please
-> leave a comment [here](https://github.com/anachronic/importmagic.el/issues/19)
-
 `importmagic.el` is an Emacs package inspired on
 @alecthomas's [importmagic](https://github.com/alecthomas/importmagic)
 library and PyCharm's ability to suggest imports for unresolved
