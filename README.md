@@ -109,7 +109,7 @@ configuration, just set them like so:
 
 Note that the example above will override a defined key binding in the
 `python-mode-map`. You can do that as long as you feel the need to (as
-I did). This package is not really intended to interfer with the
+I did). This package is not really intended to interfere with the
 default bindings, though.
 
 ### Imports style
@@ -139,7 +139,7 @@ The default value is
 ### Python Interpreter
 
 As we talked about in the first section of this document,
-`importmagic.el` won't care about the environment an will thus use the
+`importmagic.el` won't care about the environment and will use the
 default system python interpreter. If you do not want to do this and
 want to use a different python interpreter you can set
 `importmagic-python-interpreter` like so:
@@ -186,7 +186,7 @@ developer, it's not so good for the user, because it generates one
 buffer with the EPC connection for every Python buffer you open. While
 that's ok (at least for me), It can be troublesome for some people.
 
-`Helm` users can get rid of these buffers (as in not see them)
+`Helm` users can get rid of these buffers (as in not see them) by
 evaluating the following expression:
 
 ```emacs-lisp
@@ -209,7 +209,7 @@ them to a key or just want to `M-x` for it.
 ### `importmagic-mode`
 
 Turn on/off importmagic-mode in the current buffer. As usual, a
-positive argument sets it on, negative argument sets it off. With just
+positive argument sets it on and a negative argument sets it off. With just
 `M-x`, it will toggle the mode.
 
 ### `importmagic-fix-imports`
