@@ -115,6 +115,10 @@ seen on https://github.com/alecthomas/importmagic."
   "Get the program to run for the EPC server."
   (car (split-string importmagic-python-interpreter)))
 
+(defun importmagic--is-a-python-mode ()
+  "Is the buffer's major mode a python-compatible mode?"
+  (derived-mode-p 'python-mode))
+
 ;;;###autoload
 (define-minor-mode importmagic-mode
   "A mode that lets you autoimport unresolved Python symbols."
@@ -123,7 +127,7 @@ seen on https://github.com/alecthomas/importmagic."
   :keymap (let ((keymap (make-sparse-keymap)))
             (define-key keymap (kbd "C-c C-l") 'importmagic-fix-imports)
             keymap)
-  (when (not (derived-mode-p 'python-mode))
+  (when (not (importmagic--is-a-python-mode))
     (error "Importmagic only works with Python buffers"))
   (if importmagic-mode
       (progn
@@ -143,7 +147,7 @@ seen on https://github.com/alecthomas/importmagic."
 
 (defun importmagic--teardown-epc ()
   "Stop the EPC server for the current buffer."
-  (when (and (derived-mode-p 'python-mode)
+  (when (and (importmagic--is-a-python-mode)
              importmagic-server
              (symbolp 'importmagic-mode)
              (symbol-value 'importmagic-mode)
@@ -241,7 +245,7 @@ seen on https://github.com/alecthomas/importmagic."
 
 (defun importmagic--auto-update-index ()
   "Update importmagic symbol index with current directory."
-  (when (and (derived-mode-p 'python-mode)
+  (when (and (importmagic--is-a-python-mode)
              (f-this-file))
     (importmagic--async-add-dir (importmagic--get-top-level))))
 
