@@ -117,7 +117,7 @@ seen on https://github.com/alecthomas/importmagic."
 
 (defun importmagic--is-a-python-mode ()
   "Is the buffer's major mode a python-compatible mode?"
-  (derived-mode-p 'python-mode))
+  (derived-mode-p 'python-mode 'python-base-mode))
 
 ;;;###autoload
 (define-minor-mode importmagic-mode
